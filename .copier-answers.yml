@@ -1,0 +1,18 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.5.2
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: 266859638+CojiroSasaki@users.noreply.github.com
+author_name: Cojiro Sasaki
+create_claude_symlink: false
+create_gemini_symlink: false
+has_ai_rules: true
+has_binder: true
+has_settings: true
+kind: frontend
+labextension_name: jupyterlab-myst-revealjs
+project_short_description: Live reveal.js slideshow for MyST Markdown notebooks in
+    JupyterLab.
+python_name: jupyterlab_myst_revealjs
+repository: ''
+test: true
+
