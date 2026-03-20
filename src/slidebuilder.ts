@@ -178,6 +178,10 @@ export class SlideBuilder {
 
         this._applyGridwidth(node, info.tags);
 
+        if (info.cell.type !== 'code' && info.tags.includes('hide-cell')) {
+            node.classList.add('jp-Slideshow-hideCell');
+        }
+
         if (info.slideType === 'fragment') {
             node.classList.add('fragment');
             section.appendChild(node);
@@ -241,6 +245,18 @@ export class SlideBuilder {
 
         if (tags.includes('hide-input')) {
             codeCell.addClass('jp-Slideshow-hideInput');
+        }
+        if (tags.includes('hide-output')) {
+            codeCell.addClass('jp-Slideshow-hideOutput');
+        }
+        if (tags.includes('hide-cell')) {
+            codeCell.addClass('jp-Slideshow-hideCell');
+        }
+        if (tags.includes('remove-input')) {
+            codeCell.addClass('jp-Slideshow-removeInput');
+        }
+        if (tags.includes('remove-output')) {
+            codeCell.addClass('jp-Slideshow-removeOutput');
         }
 
         const container = document.createElement('div');

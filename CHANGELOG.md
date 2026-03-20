@@ -13,7 +13,11 @@
 - MyST Markdown content (figures, admonitions, math, etc.) rendered natively via jupyterlab-myst
 - Live code execution (Shift+Enter) within slideshow with output reflected in slides
 - `hide-input` tag: hides code input area
+- `hide-output` tag: hides code output area
+- `hide-cell` tag: hides entire cell (code and markdown)
 - `remove-cell` tag: excludes cell from slideshow entirely
+- `remove-input` tag: hides code input area
+- `remove-output` tag: hides code output area
 - `gridwidth-*` tags: controls cell width (`gridwidth-1-2`, `gridwidth-1-3`, `gridwidth-2-3`)
 - Fullscreen slideshow via `F` key (reveal.js built-in)
 

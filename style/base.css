@@ -70,8 +70,20 @@
     text-align: left;
 }
 
-/* hide-input: completely hide input area with no indicator */
-.jp-SlideshowContent .jp-Slideshow-hideInput .jp-Cell-inputWrapper {
+/* hide-input / remove-input: hide input area */
+.jp-SlideshowContent .jp-Slideshow-hideInput .jp-Cell-inputWrapper,
+.jp-SlideshowContent .jp-Slideshow-removeInput .jp-Cell-inputWrapper {
+    display: none;
+}
+
+/* hide-output / remove-output: hide output area */
+.jp-SlideshowContent .jp-Slideshow-hideOutput .jp-Cell-outputWrapper,
+.jp-SlideshowContent .jp-Slideshow-removeOutput .jp-Cell-outputWrapper {
+    display: none;
+}
+
+/* hide-cell: hide entire cell */
+.jp-SlideshowContent .jp-Slideshow-hideCell {
     display: none;
 }
 
