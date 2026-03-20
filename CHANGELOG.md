@@ -1,12 +1,15 @@
 # Changelog
 
-## 0.1.0 — MVP
+## Unreleased — MVP
 
 ### Features
 
 - Present MyST Markdown notebooks as reveal.js slideshows within JupyterLab
 - Toolbar button on notebook to launch slideshow view
 - Cells with `slideshow.slide_type: slide` start a new slide; `skip` excludes cell from slideshow (metadata-level control, cf. `remove-cell` tag)
+- `subslide` slide type: vertical sub-slides (navigate with ↓)
+- `fragment` slide type: incremental reveal of cell content on click
+- `notes` slide type: stores content as speaker notes (`<aside class="notes">`) for future speaker view support
 - MyST Markdown content (figures, admonitions, math, etc.) rendered natively via jupyterlab-myst
 - Live code execution (Shift+Enter) within slideshow with output reflected in slides
 - `hide-input` tag: hides code input area
@@ -21,3 +24,5 @@
   enabling live execution with full CodeMirror editor and JupyterLab-native appearance
 - SlideshowPanel and NotebookPanel share the same DocumentContext (model, kernel)
 - reveal.js CSS is scoped within SlideshowPanel's DOM tree
+- SlideBuilder uses a recursive descent parser (cells as tokens, slide_type as keywords)
+  to build the nested `<section>` tree for reveal.js

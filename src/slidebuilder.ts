@@ -3,11 +3,18 @@ import { INotebookModel } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry, MimeModel } from '@jupyterlab/rendermime';
 import { Widget } from '@lumino/widgets';
 
-export type SlideType = 'slide' | 'skip' | '-';
+export type SlideType =
+    | 'slide'
+    | 'subslide'
+    | 'fragment'
+    | 'notes'
+    | 'skip'
+    | '-';
 
 interface ICellSlideInfo {
     slideType: SlideType;
     tags: string[];
+    cell: ICellModel;
 }
 
 interface ICodeCellEntry {
@@ -21,6 +28,10 @@ export class SlideBuilder {
     private _contentFactory: Cell.IContentFactory;
     private _codeCellEntries: ICodeCellEntry[] = [];
     private _isDisposed = false;
+
+    // Parser state
+    private _cells!: INotebookModel['cells'];
+    private _pos = 0;
 
     constructor(options: SlideBuilder.IOptions) {
         this._model = options.model;
@@ -52,29 +63,10 @@ export class SlideBuilder {
         const slidesDiv = document.createElement('div');
         slidesDiv.className = 'slides';
 
-        let currentSection: HTMLElement | null = null;
+        this._cells = this._model.cells;
+        this._pos = 0;
 
-        const cells = this._model.cells;
-        for (let i = 0; i < cells.length; i++) {
-            const cell = cells.get(i);
-            const info = this._getSlideInfo(cell);
-
-            if (info.slideType === 'skip' || info.tags.includes('remove-cell')) {
-                continue;
-            }
-
-            if (info.slideType === 'slide' || currentSection === null) {
-                currentSection = document.createElement('section');
-                slidesDiv.appendChild(currentSection);
-            }
-
-            const node = cell.type === 'code'
-                ? this._renderCodeCell(cell as ICodeCellModel, info.tags)
-                : await this._renderMarkdownCell(cell);
-
-            this._applyGridwidth(node, info.tags);
-            currentSection.appendChild(node);
-        }
+        await this._parseSlides(slidesDiv);
 
         return slidesDiv;
     }
@@ -88,6 +80,114 @@ export class SlideBuilder {
             if (!entry.codeCell.isAttached) {
                 Widget.attach(entry.codeCell, entry.container);
             }
+        }
+    }
+
+    // ── Parser: recursive descent ──────────────────────────
+
+    /**
+     * slides → slide*
+     */
+    private async _parseSlides(parent: HTMLElement): Promise<void> {
+        while (this._peek() !== null) {
+            await this._parseSlide(parent);
+        }
+    }
+
+    /**
+     * slide → (SLIDE | implicit) subslide (SUBSLIDE subslide)*
+     *
+     * Creates an outer <section> (horizontal slide group).
+     * Each subslide becomes a nested inner <section>.
+     */
+    private async _parseSlide(parent: HTMLElement): Promise<void> {
+        const outer = document.createElement('section');
+
+        // First subslide (starts with SLIDE or implicit)
+        await this._parseSubSlide(outer);
+
+        // Additional subslides
+        while (this._peek()?.slideType === 'subslide') {
+            await this._parseSubSlide(outer);
+        }
+
+        parent.appendChild(outer);
+    }
+
+    /**
+     * subslide → cell*
+     *
+     * Creates an inner <section>. Consumes the leading SLIDE/SUBSLIDE token
+     * and all continuation cells (-, fragment, notes) until the next
+     * SLIDE or SUBSLIDE.
+     */
+    private async _parseSubSlide(parent: HTMLElement): Promise<void> {
+        const section = document.createElement('section');
+
+        // Consume the leading slide/subslide token
+        const first = this._peek()!;
+        if (first.slideType === 'slide' || first.slideType === 'subslide') {
+            await this._appendCell(section);
+        }
+
+        // Consume continuation cells
+        let info: ICellSlideInfo | null;
+        while ((info = this._peek()) !== null) {
+            if (info.slideType === 'slide' || info.slideType === 'subslide') {
+                break;
+            }
+            await this._appendCell(section);
+        }
+
+        parent.appendChild(section);
+    }
+
+    // ── Lexer ──────────────────────────────────────────────
+
+    /**
+     * Return slide info for the current cell, skipping over
+     * cells that should be excluded (skip / remove-cell).
+     */
+    private _peek(): ICellSlideInfo | null {
+        while (this._pos < this._cells.length) {
+            const cell = this._cells.get(this._pos);
+            const info = this._getSlideInfo(cell);
+
+            if (info.slideType === 'skip' || info.tags.includes('remove-cell')) {
+                this._pos++;
+                continue;
+            }
+            return info;
+        }
+        return null;
+    }
+
+    // ── Cell rendering ─────────────────────────────────────
+
+    /**
+     * Consume one cell and append its DOM node to the section.
+     * Applies fragment class and notes wrapper based on slide_type.
+     */
+    private async _appendCell(section: HTMLElement): Promise<void> {
+        const info = this._peek()!;
+        this._pos++;
+
+        const node = info.cell.type === 'code'
+            ? this._renderCodeCell(info.cell as ICodeCellModel, info.tags)
+            : await this._renderMarkdownCell(info.cell);
+
+        this._applyGridwidth(node, info.tags);
+
+        if (info.slideType === 'fragment') {
+            node.classList.add('fragment');
+            section.appendChild(node);
+        } else if (info.slideType === 'notes') {
+            const aside = document.createElement('aside');
+            aside.className = 'notes';
+            aside.appendChild(node);
+            section.appendChild(aside);
+        } else {
+            section.appendChild(node);
         }
     }
 
@@ -106,13 +206,18 @@ export class SlideBuilder {
             | { slide_type?: string }
             | undefined;
         const rawType = slideshow?.slide_type ?? '-';
-        const slideType: SlideType =
-            rawType === 'slide' || rawType === 'skip' ? rawType : '-';
+
+        const validTypes: SlideType[] = [
+            'slide', 'subslide', 'fragment', 'notes', 'skip'
+        ];
+        const slideType: SlideType = validTypes.includes(rawType as SlideType)
+            ? (rawType as SlideType)
+            : '-';
 
         const tags: string[] =
             (cell.getMetadata('tags') as string[] | undefined) ?? [];
 
-        return { slideType, tags };
+        return { slideType, tags, cell };
     }
 
     private _applyGridwidth(node: HTMLElement, tags: string[]): void {
