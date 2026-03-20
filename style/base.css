@@ -1,5 +1,95 @@
-/*
-    See the JupyterLab Developer Guide for useful CSS Patterns:
+.jp-SlideshowContent {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
-    https://jupyterlab.readthedocs.io/en/stable/developer/css.html
-*/
+.jp-SlideshowContent .reveal {
+    width: 100%;
+    height: 100%;
+}
+
+/* Override reveal.js theme heading transforms */
+.jp-SlideshowContent .reveal h1,
+.jp-SlideshowContent .reveal h2,
+.jp-SlideshowContent .reveal h3,
+.jp-SlideshowContent .reveal h4 {
+    text-transform: none;
+}
+
+/*
+ * Code fence highlighting in markdown cells rendered via rendermime.
+ * JupyterLab's global hljs theme may be overridden by reveal.js theme CSS,
+ * so we re-apply a minimal hljs palette scoped to markdown cells.
+ */
+.jp-Slideshow-markdownCell .hljs-keyword,
+.jp-Slideshow-markdownCell .hljs-selector-tag {
+    font-weight: bold;
+}
+
+.jp-Slideshow-markdownCell .hljs-string,
+.jp-Slideshow-markdownCell .hljs-number,
+.jp-Slideshow-markdownCell .hljs-type,
+.jp-Slideshow-markdownCell .hljs-deletion {
+    color: #880000;
+}
+
+.jp-Slideshow-markdownCell .hljs-built_in,
+.jp-Slideshow-markdownCell .hljs-addition {
+    color: #397300;
+}
+
+.jp-Slideshow-markdownCell .hljs-comment,
+.jp-Slideshow-markdownCell .hljs-quote {
+    color: #888888;
+    font-style: italic;
+}
+
+.jp-Slideshow-markdownCell .hljs-variable,
+.jp-Slideshow-markdownCell .hljs-regexp,
+.jp-Slideshow-markdownCell .hljs-symbol {
+    color: #bc6060;
+}
+
+.jp-Slideshow-markdownCell .hljs-meta {
+    color: #1f7199;
+}
+
+.jp-Slideshow-markdownCell .hljs-title,
+.jp-Slideshow-markdownCell .hljs-section {
+    font-weight: bold;
+}
+
+/* Slideshow cell containers */
+.jp-Slideshow-markdownCell {
+    text-align: left;
+}
+
+/* Code cells in slides: use JupyterLab's built-in CodeCell styling */
+.jp-SlideshowContent .jp-CodeCell {
+    text-align: left;
+}
+
+/* hide-input: completely hide input area with no indicator */
+.jp-SlideshowContent .jp-Slideshow-hideInput .jp-Cell-inputWrapper {
+    display: none;
+}
+
+/* gridwidth classes: override CodeCell display */
+.jp-SlideshowContent .gridwidth-1-2 {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.jp-SlideshowContent .gridwidth-1-3 {
+    width: 33.33%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.jp-SlideshowContent .gridwidth-2-3 {
+    width: 66.67%;
+    display: inline-block;
+    vertical-align: top;
+}

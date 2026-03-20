@@ -1,6 +1,16 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,node,jupyternotebooks,visualstudiocode,linux,windows,macos,latex
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,node,jupyternotebooks,visualstudiocode,linux,windows,macos,latex
 
+### Claude Code ###
+CLAUDE.md
+status.md
+
+### uv ###
+uv.lock
+
+### Manual test notebooks ###
+test_slideshow.ipynb
+
 ### JupyterLab Extension (copier template) ###
 *.bundle.*
 jupyterlab_myst_revealjs/labextension
