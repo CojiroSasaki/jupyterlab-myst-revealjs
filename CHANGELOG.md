@@ -20,6 +20,7 @@
 - `remove-output` tag: hides code output area
 - `gridwidth-*` tags: controls cell width (`gridwidth-1-2`, `gridwidth-1-3`, `gridwidth-2-3`)
 - Fullscreen slideshow via `F` key (reveal.js built-in)
+- `i`/`o` keys: toggle input/output visibility on focused code cell
 
 ### Architecture
 

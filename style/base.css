@@ -70,6 +70,12 @@
     text-align: left;
 }
 
+/* Focus outline for code cell containers */
+.jp-SlideshowContent .jp-Slideshow-codeCellContainer:focus {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+}
+
 /* hide-input / remove-input: hide input area */
 .jp-SlideshowContent .jp-Slideshow-hideInput .jp-Cell-inputWrapper,
 .jp-SlideshowContent .jp-Slideshow-removeInput .jp-Cell-inputWrapper {
@@ -87,21 +93,12 @@
     display: none;
 }
 
-/* gridwidth classes: override CodeCell display */
-.jp-SlideshowContent .gridwidth-1-2 {
-    width: 50%;
+/* gridwidth classes: inline layout with per-class width */
+.jp-SlideshowContent [class*="gridwidth-"] {
     display: inline-block;
     vertical-align: top;
 }
 
-.jp-SlideshowContent .gridwidth-1-3 {
-    width: 33.33%;
-    display: inline-block;
-    vertical-align: top;
-}
-
-.jp-SlideshowContent .gridwidth-2-3 {
-    width: 66.67%;
-    display: inline-block;
-    vertical-align: top;
-}
+.jp-SlideshowContent .gridwidth-1-2 { width: 50%; }
+.jp-SlideshowContent .gridwidth-1-3 { width: 33.33%; }
+.jp-SlideshowContent .gridwidth-2-3 { width: 66.67%; }

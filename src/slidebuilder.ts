@@ -50,7 +50,7 @@ export class SlideBuilder {
 
     findFocusedCodeCell(): CodeCell | null {
         for (const entry of this._codeCellEntries) {
-            if (entry.codeCell.node.contains(document.activeElement)) {
+            if (entry.container.contains(document.activeElement)) {
                 return entry.codeCell;
             }
         }
@@ -260,6 +260,8 @@ export class SlideBuilder {
         }
 
         const container = document.createElement('div');
+        container.className = 'jp-Slideshow-codeCellContainer';
+        container.tabIndex = 0;
         this._codeCellEntries.push({ codeCell, container });
         return container;
     }

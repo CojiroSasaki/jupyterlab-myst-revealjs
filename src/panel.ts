@@ -28,6 +28,11 @@ export class SlideshowPanel extends DocumentWidget<
         return this._slideBuilder;
     }
 
+    private static _toggleKeys: Record<string, string> = {
+        'i': 'jp-Slideshow-hideInput',
+        'o': 'jp-Slideshow-hideOutput'
+    };
+
     private _onKeyDown = (event: KeyboardEvent): void => {
         if (event.shiftKey && event.key === 'Enter') {
             const codeCell = this._slideBuilder.findFocusedCodeCell();
@@ -35,18 +40,36 @@ export class SlideshowPanel extends DocumentWidget<
                 event.preventDefault();
                 event.stopPropagation();
                 CodeCell.execute(codeCell, this.context.sessionContext).then(
-                    () => {
-                        requestAnimationFrame(() => {
-                            const reveal = this.content.revealInstance;
-                            if (reveal) {
-                                reveal.layout();
-                            }
-                        });
-                    }
+                    () => this._refreshLayout()
                 );
+            }
+            return;
+        }
+
+        // Toggle input/output visibility on focused code cell
+        if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) {
+            return;
+        }
+        const toggleClass = SlideshowPanel._toggleKeys[event.key];
+        if (toggleClass) {
+            const codeCell = this._slideBuilder.findFocusedCodeCell();
+            if (codeCell) {
+                event.preventDefault();
+                event.stopPropagation();
+                codeCell.toggleClass(toggleClass);
+                this._refreshLayout();
             }
         }
     };
+
+    private _refreshLayout(): void {
+        requestAnimationFrame(() => {
+            const reveal = this.content.revealInstance;
+            if (reveal) {
+                reveal.layout();
+            }
+        });
+    }
 
     private _onContentChanged(): void {
         if (this._rebuildTimeout !== null) {
