@@ -5,6 +5,11 @@
 CLAUDE.md
 status.md
 
+### Project docs (not tracked) ###
+design.md
+requirements.md
+todo.md
+
 ### uv ###
 uv.lock
 
