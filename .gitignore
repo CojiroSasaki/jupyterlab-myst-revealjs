@@ -15,6 +15,7 @@ uv.lock
 
 ### Manual test notebooks ###
 test_slideshow.ipynb
+myst-revealjs.css
 
 ### JupyterLab Extension (copier template) ###
 *.bundle.*

@@ -29,25 +29,21 @@ export class SlideshowContent extends Widget {
         this._slidesDiv.className = 'slides';
 
         this._revealDiv.appendChild(this._slidesDiv);
+
+        // Header / footer: empty divs inside .reveal but outside .slides.
+        // reveal.js scales .slides only, so these stay at viewport coordinates.
+        // Content and styling are defined by the user in myst-revealjs.css
+        // (e.g. via ::after pseudo-elements).  When empty, offsetHeight is 0
+        // and updateScrollingSections() ignores them.
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'jp-Slideshow-header';
+        this._revealDiv.appendChild(headerDiv);
+
+        const footerDiv = document.createElement('div');
+        footerDiv.className = 'jp-Slideshow-footer';
+        this._revealDiv.appendChild(footerDiv);
+
         this.node.appendChild(this._revealDiv);
-
-        // Header / footer overlays
-        if (config.header) {
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'jp-Slideshow-header';
-            headerDiv.innerHTML = config.header;
-            this._revealDiv.appendChild(headerDiv);
-        }
-        if (config.footer) {
-            const footerDiv = document.createElement('div');
-            footerDiv.className = 'jp-Slideshow-footer';
-            footerDiv.innerHTML = config.footer;
-            this._revealDiv.appendChild(footerDiv);
-        }
-    }
-
-    get revealInstance(): RevealApi | null {
-        return this._reveal;
     }
 
     async updateSlides(slidesContainer: HTMLElement): Promise<void> {
@@ -66,6 +62,71 @@ export class SlideshowContent extends Widget {
             this.node.appendChild(this._customStyleEl);
         }
         this._customStyleEl.textContent = css;
+    }
+
+    /**
+     * Adjust sections to account for header/footer overlays and enable
+     * scrolling when content overflows.
+     *
+     * - All sections get padding to prevent content from hiding behind
+     *   the absolutely-positioned header/footer.  For non-scrolling
+     *   sections, reveal.js centering still works because it uses
+     *   scrollHeight (which includes padding).
+     * - When scroll is enabled, sections whose content exceeds the
+     *   available height get an explicit height + overflow-y so the
+     *   user can scroll.
+     *
+     * Must be called AFTER reveal.js layout() so we can override the
+     * top value it sets.
+     */
+    updateScrollingSections(): void {
+        // Measure header/footer heights
+        const headerEl = this._revealDiv.querySelector('.jp-Slideshow-header') as HTMLElement | null;
+        const footerEl = this._revealDiv.querySelector('.jp-Slideshow-footer') as HTMLElement | null;
+        const headerH = headerEl ? headerEl.offsetHeight : 0;
+        const footerH = footerEl ? footerEl.offsetHeight : 0;
+
+        const sections = this._slidesDiv.querySelectorAll(
+            ':scope > section:not(.stack), :scope > section.stack > section'
+        );
+
+        const threshold = this._config.scroll
+            ? this._config.height * 0.95 - headerH - footerH
+            : Infinity;
+
+        const availableH = this._config.height - headerH - footerH;
+
+        // Phase 1: clear our overrides so scrollHeight reflects natural
+        // content height.
+        for (const section of Array.from(sections)) {
+            const el = section as HTMLElement;
+            el.style.top = '';
+            el.style.height = '';
+            el.style.overflowY = '';
+        }
+
+        // Phase 2: recalculate layout with natural heights
+        if (this._reveal) {
+            this._reveal.layout();
+        }
+
+        // Phase 3: override top to center content within the header–footer
+        // region, or enable scrolling for overflowing sections.
+        for (const section of Array.from(sections)) {
+            const el = section as HTMLElement;
+
+            if (this._config.scroll && el.scrollHeight > threshold) {
+                // Scrolling section: position below header, constrain height
+                el.style.top = headerH + 'px';
+                el.style.height = threshold + 'px';
+                el.style.overflowY = 'auto';
+            } else if (headerH > 0 || footerH > 0) {
+                // Non-scrolling section: center within available area
+                const contentH = el.scrollHeight;
+                const top = headerH + Math.max((availableH - contentH) / 2, 0);
+                el.style.top = top + 'px';
+            }
+        }
     }
 
     syncReveal(): void {
@@ -92,7 +153,7 @@ export class SlideshowContent extends Widget {
 
     protected onResize(_msg: Widget.ResizeMessage): void {
         if (this._reveal) {
-            this._reveal.layout();
+            this.updateScrollingSections();
         }
     }
 
@@ -125,5 +186,10 @@ export class SlideshowContent extends Widget {
         });
         await deck.initialize();
         this._reveal = deck;
+
+        // Re-apply scrolling overrides after reveal.js re-layouts on slide change
+        deck.on('slidechanged', () => {
+            this.updateScrollingSections();
+        });
     }
 }

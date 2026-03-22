@@ -33,8 +33,6 @@ const DEFAULTS: Required<ISlideshowConfig> = {
     width: 960,
     height: 700,
     scroll: false,
-    header: '',
-    footer: '',
 };
 
 export interface ISlideshowConfig {
@@ -47,8 +45,6 @@ export interface ISlideshowConfig {
     width?: number;
     height?: number;
     scroll?: boolean;
-    header?: string;
-    footer?: string;
 }
 
 export function readSlideshowConfig(
@@ -90,12 +86,6 @@ export function readSlideshowConfig(
         scroll: typeof raw.scroll === 'boolean'
             ? raw.scroll
             : DEFAULTS.scroll,
-        header: typeof raw.header === 'string'
-            ? raw.header
-            : DEFAULTS.header,
-        footer: typeof raw.footer === 'string'
-            ? raw.footer
-            : DEFAULTS.footer,
     };
 }
 

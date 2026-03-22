@@ -53,6 +53,7 @@ export class SlideshowPanel extends DocumentWidget<
         if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) {
             return;
         }
+
         const toggleClass = SlideshowPanel._toggleKeys[event.key];
         if (toggleClass) {
             const codeCell = this._slideBuilder.findFocusedCodeCell();
@@ -67,10 +68,7 @@ export class SlideshowPanel extends DocumentWidget<
 
     private _refreshLayout(): void {
         requestAnimationFrame(() => {
-            const reveal = this.content.revealInstance;
-            if (reveal) {
-                reveal.layout();
-            }
+            this.content.updateScrollingSections();
         });
     }
 
@@ -92,6 +90,7 @@ export class SlideshowPanel extends DocumentWidget<
             await this._loadCustomCss();
             requestAnimationFrame(() => {
                 this.content.syncReveal();
+                this.content.updateScrollingSections();
             });
         } catch (err) {
             console.warn('SlideBuilder: build failed', err);
