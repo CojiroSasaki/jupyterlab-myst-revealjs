@@ -9,6 +9,7 @@ export class SlideshowContent extends Widget {
     private _revealDiv: HTMLDivElement;
     private _slidesDiv: HTMLDivElement;
     private _config: Required<ISlideshowConfig>;
+    private _customStyleEl: HTMLStyleElement | null = null;
 
     constructor(config: Required<ISlideshowConfig>) {
         super();
@@ -57,6 +58,14 @@ export class SlideshowContent extends Widget {
         if (!this._reveal && this.isAttached) {
             await this._initReveal();
         }
+    }
+
+    injectCustomCss(css: string): void {
+        if (!this._customStyleEl) {
+            this._customStyleEl = document.createElement('style');
+            this.node.appendChild(this._customStyleEl);
+        }
+        this._customStyleEl.textContent = css;
     }
 
     syncReveal(): void {

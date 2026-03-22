@@ -1,6 +1,7 @@
 import { CodeCell } from '@jupyterlab/cells';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { INotebookModel } from '@jupyterlab/notebook';
+import { Contents } from '@jupyterlab/services';
 import { SlideshowContent } from './content';
 import { SlideBuilder } from './slidebuilder';
 
@@ -9,11 +10,13 @@ export class SlideshowPanel extends DocumentWidget<
     INotebookModel
 > {
     private _slideBuilder: SlideBuilder;
+    private _contents: Contents.IManager;
     private _rebuildTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor(options: SlideshowPanel.IOptions) {
         super(options);
         this._slideBuilder = options.slideBuilder;
+        this._contents = options.contents;
 
         this.context.ready.then(() => {
             this._buildSlides();
@@ -86,11 +89,32 @@ export class SlideshowPanel extends DocumentWidget<
             const slidesDiv = await this._slideBuilder.buildAll();
             await this.content.updateSlides(slidesDiv);
             this._slideBuilder.attachCodeCells();
+            await this._loadCustomCss();
             requestAnimationFrame(() => {
                 this.content.syncReveal();
             });
         } catch (err) {
             console.warn('SlideBuilder: build failed', err);
+        }
+    }
+
+    private async _loadCustomCss(): Promise<void> {
+        try {
+            const dir = this.context.path.replace(/[^/]*$/, '');
+            const dirPath = dir || '.';
+            const dirModel = await this._contents.get(dirPath, { content: true, type: 'directory' });
+            const cssName = 'myst-revealjs.css';
+            const items = (dirModel.content as Contents.IModel[]) ?? [];
+            const found = items.some(item => item.name === cssName);
+            if (!found) {
+                return;
+            }
+            const file = await this._contents.get(dir + cssName, { content: true, type: 'file', format: 'text' });
+            if (typeof file.content === 'string') {
+                this.content.injectCustomCss(file.content);
+            }
+        } catch {
+            // Directory listing or file read error — silently ignore
         }
     }
 
@@ -112,5 +136,6 @@ export namespace SlideshowPanel {
     export interface IOptions
         extends DocumentWidget.IOptions<SlideshowContent, INotebookModel> {
         slideBuilder: SlideBuilder;
+        contents: Contents.IManager;
     }
 }

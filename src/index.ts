@@ -41,7 +41,8 @@ function activate(
         canStartKernel: true,
         shutdownOnClose: false,
         rendermime,
-        contentFactory
+        contentFactory,
+        contents: app.serviceManager.contents
     });
 
     app.docRegistry.addWidgetFactory(factory);

@@ -15,6 +15,7 @@ interface ICellSlideInfo {
     slideType: SlideType;
     tags: string[];
     cell: ICellModel;
+    backgroundAttrs: Record<string, string>;
 }
 
 interface ICodeCellEntry {
@@ -127,6 +128,10 @@ export class SlideBuilder {
         // Consume the leading slide/subslide token
         const first = this._peek()!;
         if (first.slideType === 'slide' || first.slideType === 'subslide') {
+            // Apply background attributes from the leading cell
+            for (const [attr, value] of Object.entries(first.backgroundAttrs)) {
+                section.setAttribute(attr, value);
+            }
             await this._appendCell(section);
         }
 
@@ -207,9 +212,9 @@ export class SlideBuilder {
 
     private _getSlideInfo(cell: ICellModel): ICellSlideInfo {
         const slideshow = cell.getMetadata('slideshow') as
-            | { slide_type?: string }
+            | Record<string, unknown>
             | undefined;
-        const rawType = slideshow?.slide_type ?? '-';
+        const rawType = (slideshow?.slide_type as string) ?? '-';
 
         const validTypes: SlideType[] = [
             'slide', 'subslide', 'fragment', 'notes', 'skip'
@@ -221,7 +226,18 @@ export class SlideBuilder {
         const tags: string[] =
             (cell.getMetadata('tags') as string[] | undefined) ?? [];
 
-        return { slideType, tags, cell };
+        const backgroundAttrs: Record<string, string> = {};
+        if (slideshow) {
+            const prefix = 'slide_background_';
+            for (const key of Object.keys(slideshow)) {
+                if (key.startsWith(prefix) && typeof slideshow[key] === 'string') {
+                    const attr = 'data-background-' + key.slice(prefix.length).replace(/_/g, '-');
+                    backgroundAttrs[attr] = slideshow[key] as string;
+                }
+            }
+        }
+
+        return { slideType, tags, cell, backgroundAttrs };
     }
 
     private _applyGridwidth(node: HTMLElement, tags: string[]): void {
