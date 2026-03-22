@@ -4,6 +4,7 @@ import { INotebookModel } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { SlideshowContent } from './content';
 import { SlideshowPanel } from './panel';
+import { readSlideshowConfig } from './settings';
 import { SlideBuilder } from './slidebuilder';
 
 export class SlideshowWidgetFactory extends ABCWidgetFactory<
@@ -33,7 +34,8 @@ export class SlideshowWidgetFactory extends ABCWidgetFactory<
             contentFactory: this.contentFactory
         });
 
-        const content = new SlideshowContent();
+        const config = readSlideshowConfig(context.model.metadata);
+        const content = new SlideshowContent(config);
 
         return new SlideshowPanel({
             context,

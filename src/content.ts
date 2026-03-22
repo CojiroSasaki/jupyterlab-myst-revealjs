@@ -2,15 +2,24 @@ import { Message } from '@lumino/messaging';
 import { Widget } from '@lumino/widgets';
 import Reveal from 'reveal.js';
 import type { RevealApi } from 'reveal.js';
+import { getThemeCss, type ISlideshowConfig } from './settings';
 
 export class SlideshowContent extends Widget {
     private _reveal: RevealApi | null = null;
     private _revealDiv: HTMLDivElement;
     private _slidesDiv: HTMLDivElement;
+    private _config: Required<ISlideshowConfig>;
 
-    constructor() {
+    constructor(config: Required<ISlideshowConfig>) {
         super();
+        this._config = config;
         this.addClass('jp-SlideshowContent');
+
+        // Inject scoped CSS (core + theme)
+        const { coreCss, themeCss } = getThemeCss(config.theme);
+        const styleEl = document.createElement('style');
+        styleEl.textContent = coreCss + '\n' + themeCss;
+        this.node.appendChild(styleEl);
 
         this._revealDiv = document.createElement('div');
         this._revealDiv.className = 'reveal';
@@ -20,6 +29,20 @@ export class SlideshowContent extends Widget {
 
         this._revealDiv.appendChild(this._slidesDiv);
         this.node.appendChild(this._revealDiv);
+
+        // Header / footer overlays
+        if (config.header) {
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'jp-Slideshow-header';
+            headerDiv.innerHTML = config.header;
+            this._revealDiv.appendChild(headerDiv);
+        }
+        if (config.footer) {
+            const footerDiv = document.createElement('div');
+            footerDiv.className = 'jp-Slideshow-footer';
+            footerDiv.innerHTML = config.footer;
+            this._revealDiv.appendChild(footerDiv);
+        }
     }
 
     get revealInstance(): RevealApi | null {
@@ -73,15 +96,23 @@ export class SlideshowContent extends Widget {
     }
 
     private async _initReveal(): Promise<void> {
+        const c = this._config;
         const deck = new Reveal(this._revealDiv, {
+            // Architecture-fixed options
             embedded: true,
             keyboardCondition: 'focused',
-            width: 960,
-            height: 700,
-            margin: 0.04,
             hash: false,
             history: false,
-            transition: 'slide'
+            margin: 0.04,
+            // User-configurable options
+            width: c.width,
+            height: c.height,
+            controls: c.controls,
+            progress: c.progress,
+            slideNumber: c.slideNumber,
+            center: c.center,
+            transition: c.transition as 'none' | 'fade' | 'slide' | 'convex' | 'concave' | 'zoom',
+            scrollActivationWidth: c.scroll ? 0 : undefined,
         });
         await deck.initialize();
         this._reveal = deck;
