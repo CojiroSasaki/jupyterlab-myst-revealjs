@@ -7,8 +7,14 @@ import { Cell } from '@jupyterlab/cells';
 import { IEditorServices } from '@jupyterlab/codeeditor';
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
-import { launchIcon } from '@jupyterlab/ui-components';
+import { LabIcon } from '@jupyterlab/ui-components';
 import { SlideshowWidgetFactory } from './factory';
+import presentationSvg from '../style/icons/presentation.svg';
+
+const presentationIcon = new LabIcon({
+    name: 'jupyterlab-myst-revealjs:presentation',
+    svgstr: presentationSvg
+});
 
 const FACTORY_NAME = 'Slideshow';
 const COMMAND_ID = 'slideshow:open';
@@ -50,7 +56,7 @@ function activate(
     app.commands.addCommand(COMMAND_ID, {
         label: (args: any) =>
             args.toolbar ? '' : 'Open as Slideshow',
-        icon: launchIcon,
+        icon: presentationIcon,
         caption: 'Open as Slideshow',
         execute: args => {
             const path =
