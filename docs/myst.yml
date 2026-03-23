@@ -12,7 +12,6 @@ project:
         - file: user-guide/cell-metadata.md
         - file: user-guide/cell-tags.md
         - file: user-guide/themes.md
-        - file: user-guide/reference.ipynb
     - title: Developer Guide
       children:
         - file: developer-guide/architecture.md
