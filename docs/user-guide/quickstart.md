@@ -16,7 +16,6 @@ Each cell needs a slide type to define the slide structure. Use JupyterLab's
 - **Slide** — starts a new horizontal slide.
 - **Sub-Slide** — starts a new vertical slide under the current slide.
 - **Fragment** — appears on click within the current slide.
-- **Notes** — speaker notes (not displayed on the slide).
 - **Skip** — excluded from the slideshow entirely.
 - **-** (dash) — continues the previous slide (default).
 

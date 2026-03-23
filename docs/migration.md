@@ -7,7 +7,7 @@ jupyterlab-myst-revealjs.
 ## What stays the same
 
 - **Cell metadata**: `slideshow.slide_type` is fully compatible. Your existing
-  slide/subslide/fragment/notes/skip assignments work without changes.
+  slide/subslide/fragment/skip assignments work without changes.
 - **Slide structure**: The same horizontal/vertical slide model from reveal.js.
 - **Keyboard navigation**: Standard reveal.js keys (arrows, Space, Escape).
 - **Live code execution**: Shift+Enter executes code on the slide.

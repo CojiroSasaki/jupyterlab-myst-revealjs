@@ -1,138 +1,93 @@
-# jupyterlab_myst_revealjs
+# jupyterlab-myst-revealjs
 
-[![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh//main?urlpath=lab)
+[![Github Actions Status](https://github.com/CojiroSasaki/jupyterlab-myst-revealjs/workflows/Build/badge.svg)](https://github.com/CojiroSasaki/jupyterlab-myst-revealjs/actions/workflows/build.yml)
 
+Live [reveal.js](https://revealjs.com/) slideshow for [MyST Markdown](https://mystmd.org/) notebooks in JupyterLab.
 
-Live reveal.js slideshow for MyST Markdown notebooks in JupyterLab.
+Open any notebook as a slideshow panel beside the notebook editor. Markdown cells are rendered via [jupyterlab-myst](https://github.com/jupyter-book/jupyterlab-myst), code cells use JupyterLab's native CodeCell widget — execute code and see results on slides in real time.
+
+## Features
+
+- **reveal.js slideshow** — present notebooks as reveal.js slides directly in JupyterLab
+- **Slide structure** — `slide`, `subslide`, `fragment`, `skip` via cell metadata
+- **MyST Markdown** — admonitions, math, cross-references, and all MyST directives
+- **Live code execution** — Shift+Enter runs code cells on slides (shared kernel with notebook)
+- **Cell tags**
+  - Jupyter Book compatible — `hide-input`, `hide-output`, `hide-cell`, `remove-input`, `remove-output`, `remove-cell`
+  - Grid layout — `gridwidth-*` tags for multi-column layouts
+- **Customization**
+  - Slide backgrounds — per-slide background color/image via cell metadata
+  - Themes — 6 bundled reveal.js themes (black, white, dracula, serif, and more)
+  - Custom CSS — drop a `myst-revealjs.css` next to your notebook for custom styling
+  - Header / Footer — CSS-based overlays customizable via `myst-revealjs.css`
+- **Keyboard controls**
+  - Code visibility toggle — `i` / `o` keys to toggle input/output on focused code cells during the slideshow
+  - Fullscreen / Overview — `f` for fullscreen, `o` for slide overview
 
 ## Requirements
 
 - JupyterLab >= 4.0.0
+- [jupyterlab-myst](https://github.com/jupyter-book/jupyterlab-myst)
+- [jupyterlab-gridwidth](https://github.com/timkpaine/jupyterlab_gridwidth) (optional — for `gridwidth-*` tag preview in notebook view)
 
 ## Install
 
-To install the extension, execute:
-
 ```bash
-pip install jupyterlab_myst_revealjs
+pip install jupyterlab-myst-revealjs
 ```
+
+No Node.js required — this is a prebuilt extension.
 
 ## Uninstall
 
-To remove the extension, execute:
-
 ```bash
-pip uninstall jupyterlab_myst_revealjs
+pip uninstall jupyterlab-myst-revealjs
 ```
 
-## Contributing
+## Quick Start
 
-### Development install
+1. Open a notebook in JupyterLab.
+2. Click the **slideshow button** in the toolbar, or run `slideshow:open` from the Command Palette.
+3. Set slide types via the Property Inspector (right sidebar).
+4. Press **Shift+Enter** on code cells to execute them on slides.
 
-Note: You will need NodeJS to build the extension package.
+## Configuration
 
-The `jlpm` command is JupyterLab's pinned version of
-[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
-`yarn` or `npm` in lieu of `jlpm` below.
+Add a `myst-revealjs` key to your notebook metadata to configure reveal.js options:
+
+```json
+{
+  "myst-revealjs": {
+    "theme": "white",
+    "transition": "fade",
+    "slideNumber": true
+  }
+}
+```
+
+See the [documentation](https://github.com/CojiroSasaki/jupyterlab-myst-revealjs/tree/main/docs) for full configuration options, cell metadata reference, and migration guide from RISE.
+
+## Development
+
+### Building
 
 ```bash
-# Clone the repo to your local environment
-# Change directory to the jupyterlab_myst_revealjs directory
-
-# Set up a virtual environment and install package in development mode
-python -m venv .venv
-source .venv/bin/activate
-pip install --editable "."
-
-# Link your development version of the extension with JupyterLab
+uv venv && uv pip install -e ".[dev]"
+jlpm install && jlpm build
 jupyter labextension develop . --overwrite
-
-# Rebuild extension Typescript source after making changes
-# IMPORTANT: Unlike the steps above which are performed only once, do this step
-# every time you make a change.
-jlpm build
 ```
 
-You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
+Run `jlpm watch` in one terminal and `jupyter lab` in another for live development.
+
+### Testing
 
 ```bash
-# Watch the source directory in one terminal, automatically rebuilding when needed
-jlpm watch
-# Run JupyterLab in another terminal
-jupyter lab
+jlpm test                    # Unit tests (Jest)
+cd ui-tests && jlpm test     # E2E tests (Playwright + Galata)
 ```
 
-With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
+See [CONTRIBUTING](https://github.com/CojiroSasaki/jupyterlab-myst-revealjs/blob/main/docs/developer-guide/contributing.md) for details.
 
-By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
+## License
 
-```bash
-jupyter lab build --minimize=False
-```
-
-### Development uninstall
-
-```bash
-pip uninstall jupyterlab_myst_revealjs
-```
-
-In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
-command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `jupyterlab-myst-revealjs` within that folder.
-
-### Testing the extension
-
-#### Frontend tests
-
-This extension is using [Jest](https://jestjs.io/) for JavaScript code testing.
-
-To execute them, execute:
-
-```sh
-jlpm
-jlpm test
-```
-
-#### Integration tests
-
-This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
-More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
-
-More information are provided within the [ui-tests](./ui-tests/README.md) README.
-
-## AI Coding Assistant Support
-
-This project includes an `AGENTS.md` file with coding standards and best practices for JupyterLab extension development. The file follows the [AGENTS.md standard](https://agents.md) for cross-tool compatibility.
-
-### Compatible AI Tools
-
-`AGENTS.md` works with AI coding assistants that support the standard, including Cursor, GitHub Copilot, Windsurf, Aider, and others. For a current list of compatible tools, see [the AGENTS.md standard](https://agents.md).
-
-Other conventions you might encounter:
-
-- `.cursorrules` - Cursor's YAML/JSON format (Cursor also supports AGENTS.md natively)
-- `CONVENTIONS.md` / `CONTRIBUTING.md` - For CodeConventions.ai and GitHub bots
-- Project-specific rules in JetBrains AI Assistant settings
-
-All tool-specific files should be symlinks to `AGENTS.md` as the single source of truth.
-
-### What's Included
-
-The `AGENTS.md` file provides guidance on:
-
-- Code quality rules and file-scoped validation commands
-- Naming conventions for packages, plugins, and files
-- Coding standards (TypeScript)
-- Development workflow and debugging
-- Common pitfalls and how to avoid them
-
-### Customization
-
-You can edit `AGENTS.md` to add project-specific conventions or adjust guidelines to match your team's practices. The file uses plain Markdown with Do/Don't patterns and references to actual project files.
-
-**Note**: `AGENTS.md` is living documentation. Update it when you change conventions, add dependencies, or discover new patterns. Include `AGENTS.md` updates in commits that modify workflows or coding standards.
-
-### Packaging the extension
-
-See [RELEASE](RELEASE.md)
+MIT

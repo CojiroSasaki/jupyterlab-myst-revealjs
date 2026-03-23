@@ -18,7 +18,6 @@ the same metadata used by RISE and nbconvert.
 | `"slide"` | Starts a new horizontal `<section>`. |
 | `"subslide"` | Starts a new vertical sub-slide within the current slide. |
 | `"fragment"` | Displayed on click within the current slide. |
-| `"notes"` | Speaker notes (`<aside class="notes">`). |
 | `"skip"` | Excluded from the slideshow DOM. |
 | `"-"` | Continues the previous slide (default). |
 

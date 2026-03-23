@@ -1,17 +1,17 @@
 {
     "name": "jupyterlab-myst-revealjs",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "Live reveal.js slideshow for MyST Markdown notebooks in JupyterLab.",
     "keywords": [
         "jupyter",
         "jupyterlab",
         "jupyterlab-extension"
     ],
-    "homepage": "",
+    "homepage": "https://github.com/CojiroSasaki/jupyterlab-myst-revealjs",
     "bugs": {
-        "url": "/issues"
+        "url": "https://github.com/CojiroSasaki/jupyterlab-myst-revealjs/issues"
     },
-    "license": "BSD-3-Clause",
+    "license": "MIT",
     "author": {
         "name": "Cojiro Sasaki",
         "email": "266859638+CojiroSasaki@users.noreply.github.com"
@@ -27,7 +27,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": ".git"
+        "url": "https://github.com/CojiroSasaki/jupyterlab-myst-revealjs.git"
     },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
