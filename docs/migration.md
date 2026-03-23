@@ -56,9 +56,40 @@ If you used `jupyter_contrib_nbextensions` extensions:
 
 | Old approach | New approach |
 |---|---|
-| Hide Input extension | `hide-input` cell tag |
-| Hide Input All extension | `hide-input` tag on each cell |
+| Hide Input extension | `hide-input` cell tag (code cells only) |
+| Hide Input All extension | `hide-input` tag on each code cell |
 | Split Cell extension | `gridwidth-1-2` cell tag |
+| `nbsphinx: "hidden"` metadata | `remove-cell` cell tag |
+
+:::{note}
+`hide-input` should only be applied to code cells. Applying it to markdown
+cells may cause them to be hidden in the notebook view.
+:::
+
+## Visibility tags: slideshow vs Jupyter Book
+
+The `remove-cell` tag and `skip` slide type serve different purposes:
+
+| Tag | Slideshow | Jupyter Book |
+|---|---|---|
+| `slide_type: "skip"` | Excluded | No effect |
+| `remove-cell` tag | **Shown** | Excluded |
+| Both | Excluded | Excluded |
+
+This allows content to be duplicated across slides for self-contained
+presentations while being excluded from typeset output.
+
+## Markdown syntax migration
+
+HTML-based alert boxes used in classic notebooks do not render math in MyST
+Markdown. Convert them to MyST admonition directives:
+
+| Old syntax | New syntax |
+|---|---|
+| `<div class="alert alert-info">` | `:::{note}` |
+| `<div class="alert alert-warning">` | `:::{warning}` |
+| `<div class="alert alert-danger">` | `:::{danger}` |
+| `<div class="alert alert-success">` | `:::{tip}` |
 
 ## New capabilities
 

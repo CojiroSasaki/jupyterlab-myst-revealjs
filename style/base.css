@@ -66,6 +66,15 @@
     font-weight: bold;
 }
 
+/* Hide duplicate MyST frontmatter blocks: jupyterlab-myst treats each cell as
+ * an independent document, promoting the first heading to a frontmatter title.
+ * For ## and below, both a frontmatter <h1> and the actual heading are emitted.
+ * For #, only the frontmatter block exists.  Hide only when a sibling heading
+ * follows (i.e. the frontmatter is a duplicate). */
+.jp-SlideshowContent .myst-fm-block:has(~ h1, ~ h2, ~ h3, ~ h4, ~ h5, ~ h6) {
+    display: none;
+}
+
 /* Slideshow cell containers: inherit reveal.js theme colors */
 .jp-Slideshow-markdownCell {
     text-align: left;

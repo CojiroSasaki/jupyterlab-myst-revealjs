@@ -285,18 +285,18 @@ describe('SlideBuilder', () => {
     });
 
     describe('tag processing', () => {
-        it('excludes remove-cell tagged cells from the DOM', async () => {
+        it('includes remove-cell tagged cells in the slideshow DOM', async () => {
             const cells = [
                 createCellModel('markdown', { slideshow: { slide_type: 'slide' } }, '# Title'),
                 createCellModel('markdown', {
                     slideshow: { slide_type: '-' },
                     tags: ['remove-cell']
-                }, 'removed')
+                }, 'kept in slideshow')
             ];
             const dom = await buildSlides(cells);
 
             const inner = getInnerSections(dom)[0];
-            expect(inner.children).toHaveLength(1);
+            expect(inner.children).toHaveLength(2);
         });
 
         it('applies hide-input class to code cells with hide-input tag', async () => {

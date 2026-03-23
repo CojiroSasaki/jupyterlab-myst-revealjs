@@ -151,14 +151,14 @@ export class SlideBuilder {
 
     /**
      * Return slide info for the current cell, skipping over
-     * cells that should be excluded (skip / remove-cell).
+     * cells with slide_type "skip".
      */
     private _peek(): ICellSlideInfo | null {
         while (this._pos < this._cells.length) {
             const cell = this._cells.get(this._pos);
             const info = this._getSlideInfo(cell);
 
-            if (info.slideType === 'skip' || info.tags.includes('remove-cell')) {
+            if (info.slideType === 'skip') {
                 this._pos++;
                 continue;
             }
