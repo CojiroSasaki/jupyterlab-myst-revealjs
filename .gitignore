@@ -23,6 +23,9 @@ jupyterlab_myst_revealjs/labextension
 # Version file is handled by hatchling
 jupyterlab_myst_revealjs/_version.py
 
+# Jest test output
+junit.xml
+
 # Integration tests (Playwright/Galata)
 ui-tests/test-results/
 ui-tests/playwright-report/
