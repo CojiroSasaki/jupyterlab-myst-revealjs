@@ -9,90 +9,87 @@ import themeWhite from '../style/themes/white.raw.css';
 import themeWhiteContrast from '../style/themes/white-contrast.raw.css';
 
 const THEME_CSS: Record<string, string> = {
-    black: themeBlack,
-    'black-contrast': themeBlackContrast,
-    dracula: themeDracula,
-    serif: themeSerif,
-    white: themeWhite,
-    'white-contrast': themeWhiteContrast,
+  black: themeBlack,
+  'black-contrast': themeBlackContrast,
+  dracula: themeDracula,
+  serif: themeSerif,
+  white: themeWhite,
+  'white-contrast': themeWhiteContrast
 };
 
 export const VALID_THEMES = Object.keys(THEME_CSS);
 
 const VALID_TRANSITIONS = [
-    'none', 'fade', 'slide', 'convex', 'concave', 'zoom'
+  'none',
+  'fade',
+  'slide',
+  'convex',
+  'concave',
+  'zoom'
 ];
 
 const DEFAULTS: Required<ISlideshowConfig> = {
-    theme: 'white',
-    transition: 'slide',
-    controls: true,
-    progress: true,
-    slideNumber: false,
-    center: true,
-    width: 960,
-    height: 700,
-    scroll: false,
+  theme: 'white',
+  transition: 'slide',
+  controls: true,
+  progress: true,
+  slideNumber: false,
+  center: true,
+  width: 960,
+  height: 700,
+  scroll: false
 };
 
 export interface ISlideshowConfig {
-    theme?: string;
-    transition?: string;
-    controls?: boolean;
-    progress?: boolean;
-    slideNumber?: boolean;
-    center?: boolean;
-    width?: number;
-    height?: number;
-    scroll?: boolean;
+  theme?: string;
+  transition?: string;
+  controls?: boolean;
+  progress?: boolean;
+  slideNumber?: boolean;
+  center?: boolean;
+  width?: number;
+  height?: number;
+  scroll?: boolean;
 }
 
 export function readSlideshowConfig(
-    metadata: INotebookMetadata
+  metadata: INotebookMetadata
 ): Required<ISlideshowConfig> {
-    const raw = (metadata as Record<string, unknown>)['myst-revealjs'] as
-        | Partial<ISlideshowConfig>
-        | undefined;
+  const raw = (metadata as Record<string, unknown>)['myst-revealjs'] as
+    | Partial<ISlideshowConfig>
+    | undefined;
 
-    if (!raw || typeof raw !== 'object') {
-        return { ...DEFAULTS };
-    }
+  if (!raw || typeof raw !== 'object') {
+    return { ...DEFAULTS };
+  }
 
-    return {
-        theme: VALID_THEMES.includes(raw.theme ?? '')
-            ? raw.theme!
-            : DEFAULTS.theme,
-        transition: VALID_TRANSITIONS.includes(raw.transition ?? '')
-            ? raw.transition!
-            : DEFAULTS.transition,
-        controls: typeof raw.controls === 'boolean'
-            ? raw.controls
-            : DEFAULTS.controls,
-        progress: typeof raw.progress === 'boolean'
-            ? raw.progress
-            : DEFAULTS.progress,
-        slideNumber: typeof raw.slideNumber === 'boolean'
-            ? raw.slideNumber
-            : DEFAULTS.slideNumber,
-        center: typeof raw.center === 'boolean'
-            ? raw.center
-            : DEFAULTS.center,
-        width: typeof raw.width === 'number'
-            ? raw.width
-            : DEFAULTS.width,
-        height: typeof raw.height === 'number'
-            ? raw.height
-            : DEFAULTS.height,
-        scroll: typeof raw.scroll === 'boolean'
-            ? raw.scroll
-            : DEFAULTS.scroll,
-    };
+  return {
+    theme: VALID_THEMES.includes(raw.theme ?? '') ? raw.theme! : DEFAULTS.theme,
+    transition: VALID_TRANSITIONS.includes(raw.transition ?? '')
+      ? raw.transition!
+      : DEFAULTS.transition,
+    controls:
+      typeof raw.controls === 'boolean' ? raw.controls : DEFAULTS.controls,
+    progress:
+      typeof raw.progress === 'boolean' ? raw.progress : DEFAULTS.progress,
+    slideNumber:
+      typeof raw.slideNumber === 'boolean'
+        ? raw.slideNumber
+        : DEFAULTS.slideNumber,
+    center: typeof raw.center === 'boolean' ? raw.center : DEFAULTS.center,
+    width: typeof raw.width === 'number' ? raw.width : DEFAULTS.width,
+    height: typeof raw.height === 'number' ? raw.height : DEFAULTS.height,
+    scroll: typeof raw.scroll === 'boolean' ? raw.scroll : DEFAULTS.scroll
+  };
 }
 
 /**
  * Return reveal.js core CSS and the selected theme CSS as strings.
  */
-export function getThemeCss(theme: string): { coreCss: string; themeCss: string } {
-    const themeCss = THEME_CSS[theme] ?? THEME_CSS[DEFAULTS.theme];
-    return { coreCss: revealCoreCss, themeCss };
+export function getThemeCss(theme: string): {
+  coreCss: string;
+  themeCss: string;
+} {
+  const themeCss = THEME_CSS[theme] ?? THEME_CSS[DEFAULTS.theme];
+  return { coreCss: revealCoreCss, themeCss };
 }

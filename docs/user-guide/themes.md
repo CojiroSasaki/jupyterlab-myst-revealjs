@@ -5,22 +5,22 @@
 The extension bundles 6 reveal.js themes that work offline (no Google Fonts
 dependency):
 
-| Theme | Description |
-|---|---|
-| `white` | White background, dark text (default) |
-| `white-contrast` | High-contrast variant of white |
-| `black` | Black background, light text |
-| `black-contrast` | High-contrast variant of black |
-| `serif` | Serif font family, warm tones |
-| `dracula` | Dark theme with Dracula color palette |
+| Theme            | Description                           |
+| ---------------- | ------------------------------------- |
+| `white`          | White background, dark text (default) |
+| `white-contrast` | High-contrast variant of white        |
+| `black`          | Black background, light text          |
+| `black-contrast` | High-contrast variant of black        |
+| `serif`          | Serif font family, warm tones         |
+| `dracula`        | Dark theme with Dracula color palette |
 
 Set the theme in notebook metadata:
 
 ```json
 {
-    "myst-revealjs": {
-        "theme": "dracula"
-    }
+  "myst-revealjs": {
+    "theme": "dracula"
+  }
 }
 ```
 
@@ -43,15 +43,15 @@ overlay elements on every slide. Style them in your custom CSS:
 
 ```css
 .jp-Slideshow-header::after {
-    content: 'My Presentation Title';
-    font-size: 0.5em;
-    color: #666;
+  content: 'My Presentation Title';
+  font-size: 0.5em;
+  color: #666;
 }
 
 .jp-Slideshow-footer::after {
-    content: 'Author Name — 2026';
-    font-size: 0.4em;
-    color: #999;
+  content: 'Author Name — 2026';
+  font-size: 0.4em;
+  color: #999;
 }
 ```
 
@@ -64,7 +64,7 @@ override styles in `myst-revealjs.css`:
 @import url('https://fonts.googleapis.com/css2?family=League+Gothic&display=swap');
 
 .reveal {
-    --r-heading-font: 'League Gothic', sans-serif;
+  --r-heading-font: 'League Gothic', sans-serif;
 }
 ```
 

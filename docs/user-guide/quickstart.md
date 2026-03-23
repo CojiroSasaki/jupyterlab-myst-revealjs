@@ -44,9 +44,9 @@ tags.
 
 Standard reveal.js navigation keys apply:
 
-| Key | Action |
-|---|---|
-| Right / Down | Next slide |
-| Left / Up | Previous slide |
-| Space | Next slide (wraps) |
-| Escape | Overview mode |
+| Key          | Action             |
+| ------------ | ------------------ |
+| Right / Down | Next slide         |
+| Left / Up    | Previous slide     |
+| Space        | Next slide (wraps) |
+| Escape       | Overview mode      |

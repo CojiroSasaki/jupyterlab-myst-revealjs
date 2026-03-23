@@ -7,19 +7,19 @@ the same metadata used by RISE and nbconvert.
 
 ```json
 {
-    "slideshow": {
-        "slide_type": "slide"
-    }
+  "slideshow": {
+    "slide_type": "slide"
+  }
 }
 ```
 
-| Value | Behavior |
-|---|---|
-| `"slide"` | Starts a new horizontal `<section>`. |
+| Value        | Behavior                                                  |
+| ------------ | --------------------------------------------------------- |
+| `"slide"`    | Starts a new horizontal `<section>`.                      |
 | `"subslide"` | Starts a new vertical sub-slide within the current slide. |
-| `"fragment"` | Displayed on click within the current slide. |
-| `"skip"` | Excluded from the slideshow DOM. |
-| `"-"` | Continues the previous slide (default). |
+| `"fragment"` | Displayed on click within the current slide.              |
+| `"skip"`     | Excluded from the slideshow DOM.                          |
+| `"-"`        | Continues the previous slide (default).                   |
 
 The first cell implicitly starts a slide even without an explicit
 `"slide"` type.
@@ -32,26 +32,26 @@ attributes on the `<section>` element.
 
 ```json
 {
-    "slideshow": {
-        "slide_type": "slide",
-        "slide_background_color": "#1a1a2e",
-        "slide_background_image": "url(image.png)",
-        "slide_background_size": "cover",
-        "slide_background_position": "center",
-        "slide_background_repeat": "no-repeat",
-        "slide_background_opacity": "0.5"
-    }
+  "slideshow": {
+    "slide_type": "slide",
+    "slide_background_color": "#1a1a2e",
+    "slide_background_image": "url(image.png)",
+    "slide_background_size": "cover",
+    "slide_background_position": "center",
+    "slide_background_repeat": "no-repeat",
+    "slide_background_opacity": "0.5"
+  }
 }
 ```
 
-| Metadata key | reveal.js attribute |
-|---|---|
-| `slide_background_color` | `data-background-color` |
-| `slide_background_image` | `data-background-image` |
-| `slide_background_size` | `data-background-size` |
+| Metadata key                | reveal.js attribute        |
+| --------------------------- | -------------------------- |
+| `slide_background_color`    | `data-background-color`    |
+| `slide_background_image`    | `data-background-image`    |
+| `slide_background_size`     | `data-background-size`     |
 | `slide_background_position` | `data-background-position` |
-| `slide_background_repeat` | `data-background-repeat` |
-| `slide_background_opacity` | `data-background-opacity` |
+| `slide_background_repeat`   | `data-background-repeat`   |
+| `slide_background_opacity`  | `data-background-opacity`  |
 
 Background attributes are set on the `<section>` that the cell starts. They
 apply only to `"slide"` and `"subslide"` cells. Continuation cells (`"-"`) do

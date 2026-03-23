@@ -66,15 +66,15 @@ All operations are at the DOM level. No HTML string serialization occurs.
 
 ## Source modules
 
-| Module | Responsibility |
-|---|---|
-| `src/index.ts` | Plugin definition, factory registration, `slideshow:open` command, toolbar button |
-| `src/factory.ts` | `ABCWidgetFactory` subclass. `modelName: 'notebook'` shares context with `NotebookPanel` |
-| `src/panel.ts` | `DocumentWidget` subclass. Handles `contentChanged` rebuild, Shift+Enter execution, `i`/`o` toggle, custom CSS loading |
-| `src/content.ts` | reveal.js engine management (embedded mode). Injects theme CSS via scoped `<style>`, manages header/footer overlays |
-| `src/slidebuilder.ts` | Reads `NotebookModel` and builds reveal.js `<section>` DOM. Recursive descent parser |
-| `src/settings.ts` | Reads `ISlideshowConfig` from notebook metadata `myst-revealjs` key. Provides theme CSS strings |
-| `style/base.css` | Layout, gridwidth, hide/remove tags, hljs theme, focus indicators |
+| Module                | Responsibility                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `src/index.ts`        | Plugin definition, factory registration, `slideshow:open` command, toolbar button                                      |
+| `src/factory.ts`      | `ABCWidgetFactory` subclass. `modelName: 'notebook'` shares context with `NotebookPanel`                               |
+| `src/panel.ts`        | `DocumentWidget` subclass. Handles `contentChanged` rebuild, Shift+Enter execution, `i`/`o` toggle, custom CSS loading |
+| `src/content.ts`      | reveal.js engine management (embedded mode). Injects theme CSS via scoped `<style>`, manages header/footer overlays    |
+| `src/slidebuilder.ts` | Reads `NotebookModel` and builds reveal.js `<section>` DOM. Recursive descent parser                                   |
+| `src/settings.ts`     | Reads `ISlideshowConfig` from notebook metadata `myst-revealjs` key. Provides theme CSS strings                        |
+| `style/base.css`      | Layout, gridwidth, hide/remove tags, hljs theme, focus indicators                                                      |
 
 ## SlideBuilder grammar
 

@@ -1,18 +1,18 @@
 .jp-SlideshowContent {
-    position: relative;
-    width: 100%;
-    height: 100%;
+  position: relative;
+  width: 100%;
+  height: 100%;
 
-    /* Bridge reveal.js theme colors into JupyterLab CSS variables */
-    --jp-content-font-color0: var(--r-main-color);
-    --jp-content-font-color1: var(--r-main-color);
-    --jp-content-font-color2: var(--r-main-color);
-    --jp-content-font-color3: var(--r-main-color);
+  /* Bridge reveal.js theme colors into JupyterLab CSS variables */
+  --jp-content-font-color0: var(--r-main-color);
+  --jp-content-font-color1: var(--r-main-color);
+  --jp-content-font-color2: var(--r-main-color);
+  --jp-content-font-color3: var(--r-main-color);
 }
 
 .jp-SlideshowContent .reveal {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 /* Override reveal.js theme heading transforms */
@@ -20,7 +20,7 @@
 .jp-SlideshowContent .reveal h2,
 .jp-SlideshowContent .reveal h3,
 .jp-SlideshowContent .reveal h4 {
-    text-transform: none;
+  text-transform: none;
 }
 
 /*
@@ -30,40 +30,40 @@
  */
 .jp-Slideshow-markdownCell .hljs-keyword,
 .jp-Slideshow-markdownCell .hljs-selector-tag {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .jp-Slideshow-markdownCell .hljs-string,
 .jp-Slideshow-markdownCell .hljs-number,
 .jp-Slideshow-markdownCell .hljs-type,
 .jp-Slideshow-markdownCell .hljs-deletion {
-    color: #880000;
+  color: #800;
 }
 
 .jp-Slideshow-markdownCell .hljs-built_in,
 .jp-Slideshow-markdownCell .hljs-addition {
-    color: #397300;
+  color: #397300;
 }
 
 .jp-Slideshow-markdownCell .hljs-comment,
 .jp-Slideshow-markdownCell .hljs-quote {
-    color: #888888;
-    font-style: italic;
+  color: #888;
+  font-style: italic;
 }
 
 .jp-Slideshow-markdownCell .hljs-variable,
 .jp-Slideshow-markdownCell .hljs-regexp,
 .jp-Slideshow-markdownCell .hljs-symbol {
-    color: #bc6060;
+  color: #bc6060;
 }
 
 .jp-Slideshow-markdownCell .hljs-meta {
-    color: #1f7199;
+  color: #1f7199;
 }
 
 .jp-Slideshow-markdownCell .hljs-title,
 .jp-Slideshow-markdownCell .hljs-section {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /* Hide duplicate MyST frontmatter blocks: jupyterlab-myst treats each cell as
@@ -72,39 +72,40 @@
  * For #, only the frontmatter block exists.  Hide only when a sibling heading
  * follows (i.e. the frontmatter is a duplicate). */
 .jp-SlideshowContent .myst-fm-block:has(~ h1, ~ h2, ~ h3, ~ h4, ~ h5, ~ h6) {
-    display: none;
+  display: none;
 }
 
 /* Slideshow cell containers: inherit reveal.js theme colors */
 .jp-Slideshow-markdownCell {
-    text-align: left;
-    color: inherit;
+  text-align: left;
+  color: inherit;
 }
 
 /* Dark background slides: override JupyterLab color variables for markdown */
 .reveal .has-dark-background .jp-Slideshow-markdownCell {
-    --jp-content-font-color0: #fff;
-    --jp-content-font-color1: rgba(255, 255, 255, 0.7);
-    --jp-content-font-color2: rgba(255, 255, 255, 0.54);
-    --jp-content-font-color3: rgba(255, 255, 255, 0.38);
-    color: #fff;
+  --jp-content-font-color0: #fff;
+  --jp-content-font-color1: rgb(255 255 255 / 70%);
+  --jp-content-font-color2: rgb(255 255 255 / 54%);
+  --jp-content-font-color3: rgb(255 255 255 / 38%);
+
+  color: #fff;
 }
 
 /* Code cells in slides: override Lumino's default styling so the cell
  * participates in normal flow and has no inner scrollbars. */
 .jp-SlideshowContent .jp-CodeCell {
-    position: relative !important;
-    width: 100%;
-    height: auto !important;
-    text-align: left;
-    overflow: hidden !important;
+  position: relative !important;
+  width: 100%;
+  height: auto !important;
+  text-align: left;
+  overflow: hidden !important;
 }
 
 /* Hide JupyterLab cell chrome that is not useful in slideshow mode */
 .jp-SlideshowContent .jp-Collapser,
 .jp-SlideshowContent .jp-CellResizeHandle,
 .jp-SlideshowContent .jp-OutputArea-promptOverlay {
-    display: none !important;
+  display: none !important;
 }
 
 /* Remove inner scrollbars from output areas to unify scrolling at section level */
@@ -113,44 +114,52 @@
 .jp-SlideshowContent .jp-OutputArea-child,
 .jp-SlideshowContent .jp-OutputArea-output,
 .jp-SlideshowContent .jp-OutputArea-output pre {
-    max-height: none !important;
-    overflow: hidden !important;
+  max-height: none !important;
+  overflow: hidden !important;
 }
 
 /* Focus indicator for code cell containers (box-shadow avoids clipping by section overflow) */
 .jp-SlideshowContent .jp-Slideshow-codeCellContainer:focus,
 .jp-SlideshowContent .jp-Slideshow-codeCellContainer:focus-visible,
 .jp-SlideshowContent .jp-Slideshow-codeCellContainer:focus-within {
-    outline: none;
-    box-shadow: inset 0 0 0 2px #1976d2 !important;
+  outline: none;
+  box-shadow: inset 0 0 0 2px #1976d2 !important;
 }
 
 /* hide-input / remove-input: hide input area */
 .jp-SlideshowContent .jp-Slideshow-hideInput .jp-Cell-inputWrapper,
 .jp-SlideshowContent .jp-Slideshow-removeInput .jp-Cell-inputWrapper {
-    display: none;
+  display: none;
 }
 
 /* hide-output / remove-output: hide output area */
 .jp-SlideshowContent .jp-Slideshow-hideOutput .jp-Cell-outputWrapper,
 .jp-SlideshowContent .jp-Slideshow-removeOutput .jp-Cell-outputWrapper {
-    display: none;
+  display: none;
 }
 
 /* hide-cell: hide entire cell */
 .jp-SlideshowContent .jp-Slideshow-hideCell {
-    display: none;
+  display: none;
 }
 
 /* gridwidth classes: inline layout with per-class width */
-.jp-SlideshowContent [class*="gridwidth-"] {
-    display: inline-block;
-    vertical-align: top;
+.jp-SlideshowContent [class*='gridwidth-'] {
+  display: inline-block;
+  vertical-align: top;
 }
 
-.jp-SlideshowContent .gridwidth-1-2 { width: 50%; }
-.jp-SlideshowContent .gridwidth-1-3 { width: 33.33%; }
-.jp-SlideshowContent .gridwidth-2-3 { width: 66.67%; }
+.jp-SlideshowContent .gridwidth-1-2 {
+  width: 50%;
+}
+
+.jp-SlideshowContent .gridwidth-1-3 {
+  width: 33.33%;
+}
+
+.jp-SlideshowContent .gridwidth-2-3 {
+  width: 66.67%;
+}
 
 /* Header / footer: empty containers inside .reveal but outside .slides.
  * reveal.js scales .slides only, so these stay at viewport coordinates.
@@ -159,19 +168,19 @@
  * and updateScrollingSections() ignores them. */
 .jp-Slideshow-header,
 .jp-Slideshow-footer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    text-align: center;
-    pointer-events: none;
-    color: var(--r-main-color, inherit);
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  text-align: center;
+  pointer-events: none;
+  color: var(--r-main-color, inherit);
 }
 
 .jp-Slideshow-header {
-    top: 0;
+  top: 0;
 }
 
 .jp-Slideshow-footer {
-    bottom: 0;
+  bottom: 0;
 }

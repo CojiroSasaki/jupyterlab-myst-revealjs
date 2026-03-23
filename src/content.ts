@@ -5,191 +5,196 @@ import type { RevealApi } from 'reveal.js';
 import { getThemeCss, type ISlideshowConfig } from './settings';
 
 export class SlideshowContent extends Widget {
-    private _reveal: RevealApi | null = null;
-    private _revealDiv: HTMLDivElement;
-    private _slidesDiv: HTMLDivElement;
-    private _config: Required<ISlideshowConfig>;
-    private _customStyleEl: HTMLStyleElement | null = null;
+  private _reveal: RevealApi | null = null;
+  private _revealDiv: HTMLDivElement;
+  private _slidesDiv: HTMLDivElement;
+  private _config: Required<ISlideshowConfig>;
+  private _customStyleEl: HTMLStyleElement | null = null;
 
-    constructor(config: Required<ISlideshowConfig>) {
-        super();
-        this._config = config;
-        this.addClass('jp-SlideshowContent');
+  constructor(config: Required<ISlideshowConfig>) {
+    super();
+    this._config = config;
+    this.addClass('jp-SlideshowContent');
 
-        // Inject scoped CSS (core + theme)
-        const { coreCss, themeCss } = getThemeCss(config.theme);
-        const styleEl = document.createElement('style');
-        styleEl.textContent = coreCss + '\n' + themeCss;
-        this.node.appendChild(styleEl);
+    // Inject scoped CSS (core + theme)
+    const { coreCss, themeCss } = getThemeCss(config.theme);
+    const styleEl = document.createElement('style');
+    styleEl.textContent = coreCss + '\n' + themeCss;
+    this.node.appendChild(styleEl);
 
-        this._revealDiv = document.createElement('div');
-        this._revealDiv.className = 'reveal';
+    this._revealDiv = document.createElement('div');
+    this._revealDiv.className = 'reveal';
 
-        this._slidesDiv = document.createElement('div');
-        this._slidesDiv.className = 'slides';
+    this._slidesDiv = document.createElement('div');
+    this._slidesDiv.className = 'slides';
 
-        this._revealDiv.appendChild(this._slidesDiv);
+    this._revealDiv.appendChild(this._slidesDiv);
 
-        // Header / footer: empty divs inside .reveal but outside .slides.
-        // reveal.js scales .slides only, so these stay at viewport coordinates.
-        // Content and styling are defined by the user in myst-revealjs.css
-        // (e.g. via ::after pseudo-elements).  When empty, offsetHeight is 0
-        // and updateScrollingSections() ignores them.
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'jp-Slideshow-header';
-        this._revealDiv.appendChild(headerDiv);
+    // Header / footer: empty divs inside .reveal but outside .slides.
+    // reveal.js scales .slides only, so these stay at viewport coordinates.
+    // Content and styling are defined by the user in myst-revealjs.css
+    // (e.g. via ::after pseudo-elements).  When empty, offsetHeight is 0
+    // and updateScrollingSections() ignores them.
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'jp-Slideshow-header';
+    this._revealDiv.appendChild(headerDiv);
 
-        const footerDiv = document.createElement('div');
-        footerDiv.className = 'jp-Slideshow-footer';
-        this._revealDiv.appendChild(footerDiv);
+    const footerDiv = document.createElement('div');
+    footerDiv.className = 'jp-Slideshow-footer';
+    this._revealDiv.appendChild(footerDiv);
 
-        this.node.appendChild(this._revealDiv);
+    this.node.appendChild(this._revealDiv);
+  }
+
+  async updateSlides(slidesContainer: HTMLElement): Promise<void> {
+    this._slidesDiv.replaceChildren(...Array.from(slidesContainer.childNodes));
+
+    if (!this._reveal && this.isAttached) {
+      await this._initReveal();
+    }
+  }
+
+  injectCustomCss(css: string): void {
+    if (!this._customStyleEl) {
+      this._customStyleEl = document.createElement('style');
+      this.node.appendChild(this._customStyleEl);
+    }
+    this._customStyleEl.textContent = css;
+  }
+
+  /**
+   * Adjust sections to account for header/footer overlays and enable
+   * scrolling when content overflows.
+   *
+   * - All sections get padding to prevent content from hiding behind
+   *   the absolutely-positioned header/footer.  For non-scrolling
+   *   sections, reveal.js centering still works because it uses
+   *   scrollHeight (which includes padding).
+   * - When scroll is enabled, sections whose content exceeds the
+   *   available height get an explicit height + overflow-y so the
+   *   user can scroll.
+   *
+   * Must be called AFTER reveal.js layout() so we can override the
+   * top value it sets.
+   */
+  updateScrollingSections(): void {
+    // Measure header/footer heights
+    const headerEl = this._revealDiv.querySelector(
+      '.jp-Slideshow-header'
+    ) as HTMLElement | null;
+    const footerEl = this._revealDiv.querySelector(
+      '.jp-Slideshow-footer'
+    ) as HTMLElement | null;
+    const headerH = headerEl ? headerEl.offsetHeight : 0;
+    const footerH = footerEl ? footerEl.offsetHeight : 0;
+
+    const sections = this._slidesDiv.querySelectorAll(
+      ':scope > section:not(.stack), :scope > section.stack > section'
+    );
+
+    const threshold = this._config.scroll
+      ? this._config.height * 0.95 - headerH - footerH
+      : Infinity;
+
+    const availableH = this._config.height - headerH - footerH;
+
+    // Phase 1: clear our overrides so scrollHeight reflects natural
+    // content height.
+    for (const section of Array.from(sections)) {
+      const el = section as HTMLElement;
+      el.style.top = '';
+      el.style.height = '';
+      el.style.overflowY = '';
     }
 
-    async updateSlides(slidesContainer: HTMLElement): Promise<void> {
-        this._slidesDiv.replaceChildren(
-            ...Array.from(slidesContainer.childNodes)
-        );
-
-        if (!this._reveal && this.isAttached) {
-            await this._initReveal();
-        }
+    // Phase 2: recalculate layout with natural heights
+    if (this._reveal) {
+      this._reveal.layout();
     }
 
-    injectCustomCss(css: string): void {
-        if (!this._customStyleEl) {
-            this._customStyleEl = document.createElement('style');
-            this.node.appendChild(this._customStyleEl);
-        }
-        this._customStyleEl.textContent = css;
+    // Phase 3: override top to center content within the header–footer
+    // region, or enable scrolling for overflowing sections.
+    for (const section of Array.from(sections)) {
+      const el = section as HTMLElement;
+
+      if (this._config.scroll && el.scrollHeight > threshold) {
+        // Scrolling section: position below header, constrain height
+        el.style.top = headerH + 'px';
+        el.style.height = threshold + 'px';
+        el.style.overflowY = 'auto';
+      } else if (headerH > 0 || footerH > 0) {
+        // Non-scrolling section: center within available area
+        const contentH = el.scrollHeight;
+        const top = headerH + Math.max((availableH - contentH) / 2, 0);
+        el.style.top = top + 'px';
+      }
     }
+  }
 
-    /**
-     * Adjust sections to account for header/footer overlays and enable
-     * scrolling when content overflows.
-     *
-     * - All sections get padding to prevent content from hiding behind
-     *   the absolutely-positioned header/footer.  For non-scrolling
-     *   sections, reveal.js centering still works because it uses
-     *   scrollHeight (which includes padding).
-     * - When scroll is enabled, sections whose content exceeds the
-     *   available height get an explicit height + overflow-y so the
-     *   user can scroll.
-     *
-     * Must be called AFTER reveal.js layout() so we can override the
-     * top value it sets.
-     */
-    updateScrollingSections(): void {
-        // Measure header/footer heights
-        const headerEl = this._revealDiv.querySelector('.jp-Slideshow-header') as HTMLElement | null;
-        const footerEl = this._revealDiv.querySelector('.jp-Slideshow-footer') as HTMLElement | null;
-        const headerH = headerEl ? headerEl.offsetHeight : 0;
-        const footerH = footerEl ? footerEl.offsetHeight : 0;
-
-        const sections = this._slidesDiv.querySelectorAll(
-            ':scope > section:not(.stack), :scope > section.stack > section'
-        );
-
-        const threshold = this._config.scroll
-            ? this._config.height * 0.95 - headerH - footerH
-            : Infinity;
-
-        const availableH = this._config.height - headerH - footerH;
-
-        // Phase 1: clear our overrides so scrollHeight reflects natural
-        // content height.
-        for (const section of Array.from(sections)) {
-            const el = section as HTMLElement;
-            el.style.top = '';
-            el.style.height = '';
-            el.style.overflowY = '';
-        }
-
-        // Phase 2: recalculate layout with natural heights
-        if (this._reveal) {
-            this._reveal.layout();
-        }
-
-        // Phase 3: override top to center content within the header–footer
-        // region, or enable scrolling for overflowing sections.
-        for (const section of Array.from(sections)) {
-            const el = section as HTMLElement;
-
-            if (this._config.scroll && el.scrollHeight > threshold) {
-                // Scrolling section: position below header, constrain height
-                el.style.top = headerH + 'px';
-                el.style.height = threshold + 'px';
-                el.style.overflowY = 'auto';
-            } else if (headerH > 0 || footerH > 0) {
-                // Non-scrolling section: center within available area
-                const contentH = el.scrollHeight;
-                const top = headerH + Math.max((availableH - contentH) / 2, 0);
-                el.style.top = top + 'px';
-            }
-        }
+  syncReveal(): void {
+    if (this._reveal) {
+      const indices = this._reveal.getIndices() ?? { h: 0, v: 0 };
+      this._reveal.sync();
+      this._reveal.layout();
+      const total = this._reveal.getTotalSlides();
+      if (total > 0) {
+        this._reveal.slide(Math.min(indices.h, total - 1), indices.v);
+      }
     }
+  }
 
-    syncReveal(): void {
-        if (this._reveal) {
-            const indices = this._reveal.getIndices() ?? { h: 0, v: 0 };
-            this._reveal.sync();
-            this._reveal.layout();
-            const total = this._reveal.getTotalSlides();
-            if (total > 0) {
-                this._reveal.slide(
-                    Math.min(indices.h, total - 1),
-                    indices.v
-                );
-            }
-        }
+  protected onBeforeDetach(_msg: Message): void {
+    if (this._reveal) {
+      this._reveal.destroy();
+      this._reveal = null;
     }
+  }
 
-    protected onBeforeDetach(_msg: Message): void {
-        if (this._reveal) {
-            this._reveal.destroy();
-            this._reveal = null;
-        }
+  protected onResize(_msg: Widget.ResizeMessage): void {
+    if (this._reveal) {
+      this.updateScrollingSections();
     }
+  }
 
-    protected onResize(_msg: Widget.ResizeMessage): void {
-        if (this._reveal) {
-            this.updateScrollingSections();
-        }
+  dispose(): void {
+    if (this._reveal) {
+      this._reveal.destroy();
+      this._reveal = null;
     }
+    super.dispose();
+  }
 
-    dispose(): void {
-        if (this._reveal) {
-            this._reveal.destroy();
-            this._reveal = null;
-        }
-        super.dispose();
-    }
+  private async _initReveal(): Promise<void> {
+    const c = this._config;
+    const deck = new Reveal(this._revealDiv, {
+      // Architecture-fixed options
+      embedded: true,
+      keyboardCondition: 'focused',
+      hash: false,
+      history: false,
+      margin: 0.04,
+      // User-configurable options
+      width: c.width,
+      height: c.height,
+      controls: c.controls,
+      progress: c.progress,
+      slideNumber: c.slideNumber,
+      center: c.center,
+      transition: c.transition as
+        | 'none'
+        | 'fade'
+        | 'slide'
+        | 'convex'
+        | 'concave'
+        | 'zoom',
+      scrollActivationWidth: c.scroll ? 0 : undefined
+    });
+    await deck.initialize();
+    this._reveal = deck;
 
-    private async _initReveal(): Promise<void> {
-        const c = this._config;
-        const deck = new Reveal(this._revealDiv, {
-            // Architecture-fixed options
-            embedded: true,
-            keyboardCondition: 'focused',
-            hash: false,
-            history: false,
-            margin: 0.04,
-            // User-configurable options
-            width: c.width,
-            height: c.height,
-            controls: c.controls,
-            progress: c.progress,
-            slideNumber: c.slideNumber,
-            center: c.center,
-            transition: c.transition as 'none' | 'fade' | 'slide' | 'convex' | 'concave' | 'zoom',
-            scrollActivationWidth: c.scroll ? 0 : undefined,
-        });
-        await deck.initialize();
-        this._reveal = deck;
-
-        // Re-apply scrolling overrides after reveal.js re-layouts on slide change
-        deck.on('slidechanged', () => {
-            this.updateScrollingSections();
-        });
-    }
+    // Re-apply scrolling overrides after reveal.js re-layouts on slide change
+    deck.on('slidechanged', () => {
+      this.updateScrollingSections();
+    });
+  }
 }

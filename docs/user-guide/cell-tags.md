@@ -9,16 +9,17 @@ and behave consistently across slideshow, web, and PDF output.
 These tags work on code cells. Use JupyterLab's **Cell Tags** sidebar or
 **Property Inspector** to add them.
 
-| Tag | Effect |
-|---|---|
-| `hide-input` | Hides the code input area. Togglable with `i` key during the presentation. |
-| `hide-output` | Hides the code output area. Togglable with `o` key during the presentation. |
-| `hide-cell` | Hides the entire cell. Togglable with `i`/`o` keys. |
-| `remove-input` | Removes the code input from the slideshow DOM. Not togglable. |
-| `remove-output` | Removes the code output from the slideshow DOM. Not togglable. |
-| `remove-cell` | Removes the entire cell from the slideshow DOM. |
+| Tag             | Effect                                                                      |
+| --------------- | --------------------------------------------------------------------------- |
+| `hide-input`    | Hides the code input area. Togglable with `i` key during the presentation.  |
+| `hide-output`   | Hides the code output area. Togglable with `o` key during the presentation. |
+| `hide-cell`     | Hides the entire cell. Togglable with `i`/`o` keys.                         |
+| `remove-input`  | Removes the code input from the slideshow DOM. Not togglable.               |
+| `remove-output` | Removes the code output from the slideshow DOM. Not togglable.              |
+| `remove-cell`   | Removes the entire cell from the slideshow DOM.                             |
 
 The distinction between `hide-*` and `remove-*`:
+
 - **`hide-*`** applies `display: none` via CSS. The element exists in the DOM
   and can be toggled back during the presentation.
 - **`remove-*`** excludes the element from the slideshow DOM entirely. It cannot
@@ -31,8 +32,8 @@ on the slide (no input, no output). Execute the cell to see its output.
 
 ## Layout tags
 
-| Tag | Effect |
-|---|---|
+| Tag             | Effect         |
+| --------------- | -------------- |
 | `gridwidth-1-2` | Cell width 50% |
 | `gridwidth-1-3` | Cell width 33% |
 | `gridwidth-2-3` | Cell width 67% |
