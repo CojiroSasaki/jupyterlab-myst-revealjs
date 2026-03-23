@@ -4,6 +4,8 @@
 
 Live [reveal.js](https://revealjs.com/) slideshow for [MyST Markdown](https://mystmd.org/) notebooks in JupyterLab.
 
+![Screenshot](docs/images/screenshot.png)
+
 Open any notebook as a slideshow panel beside the notebook editor. Markdown cells are rendered via [jupyterlab-myst](https://github.com/jupyter-book/jupyterlab-myst), code cells use JupyterLab's native CodeCell widget — execute code and see results on slides in real time.
 
 ## Features
