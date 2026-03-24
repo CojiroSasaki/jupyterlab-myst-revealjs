@@ -1,33 +1,23 @@
 # Changelog
 
-## Unreleased — MVP
+## v1.0.0 (2026-03-24)
+
+Initial release.
 
 ### Features
 
 - Present MyST Markdown notebooks as reveal.js slideshows within JupyterLab
 - Toolbar button on notebook to launch slideshow view
-- Cells with `slideshow.slide_type: slide` start a new slide; `skip` excludes cell from slideshow (metadata-level control, cf. `remove-cell` tag)
-- `subslide` slide type: vertical sub-slides (navigate with ↓)
-- `fragment` slide type: incremental reveal of cell content on click
-- `notes` slide type: stores content as speaker notes (`<aside class="notes">`) for future speaker view support
-- MyST Markdown content (figures, admonitions, math, etc.) rendered natively via jupyterlab-myst
-- Live code execution (Shift+Enter) within slideshow with output reflected in slides
-- `hide-input` tag: hides code input area
-- `hide-output` tag: hides code output area
-- `hide-cell` tag: hides entire cell (code and markdown)
-- `remove-cell` tag: excludes cell from slideshow entirely
-- `remove-input` tag: hides code input area
-- `remove-output` tag: hides code output area
-- `gridwidth-*` tags: controls cell width (`gridwidth-1-2`, `gridwidth-1-3`, `gridwidth-2-3`)
-- Fullscreen slideshow via `F` key (reveal.js built-in)
+- Slide types: `slide`, `subslide`, `fragment`, `notes`, `skip`
+- Live code execution (Shift+Enter) with output reflected in slides
+- MyST Markdown content (figures, admonitions, math, etc.) rendered via jupyterlab-myst
+- Jupyter Book compatible tags: `hide-input`, `hide-output`, `hide-cell`, `remove-input`, `remove-output`
+- `gridwidth-*` tags for cell width control (`gridwidth-1-2`, `gridwidth-1-3`, `gridwidth-2-3`)
+- 6 built-in reveal.js themes (black, black-contrast, dracula, serif, white, white-contrast)
+- Slide background color/image via `slideshow.slide_background_*` cell metadata
+- Custom CSS loading (`myst-revealjs.css` from notebook directory)
+- Header/footer overlay (CSS-based, customizable via `myst-revealjs.css`)
+- Scrollable slides (`scroll: true`)
+- Configurable via notebook metadata (`myst-revealjs` key)
 - `i`/`o` keys: toggle input/output visibility on focused code cell
-
-### Architecture
-
-- Markdown cells are rendered to DOM nodes for reveal.js by jupyterlab-myst via RenderMimeRegistry
-- Code cells use JupyterLab's CodeCell widgets directly (not re-rendered via rendermime),
-  enabling live execution with full CodeMirror editor and JupyterLab-native appearance
-- SlideshowPanel and NotebookPanel share the same DocumentContext (model, kernel)
-- reveal.js CSS is scoped within SlideshowPanel's DOM tree
-- SlideBuilder uses a recursive descent parser (cells as tokens, slide_type as keywords)
-  to build the nested `<section>` tree for reveal.js
+- Fullscreen (`F`) and Overview (`O`) via reveal.js built-in
