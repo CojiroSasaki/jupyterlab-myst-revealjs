@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.1 (2026-03-24)
+
+### Bug Fixes
+
+- Add missing runtime dependencies (`jupyterlab`, `jupyterlab-myst`) to `pyproject.toml` so they are automatically installed with `pip install jupyterlab-myst-revealjs`
+
 ## v1.0.0 (2026-03-24)
 
 Initial release.
