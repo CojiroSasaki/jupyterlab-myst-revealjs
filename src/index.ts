@@ -48,7 +48,8 @@ function activate(
     shutdownOnClose: false,
     rendermime,
     contentFactory,
-    contents: app.serviceManager.contents
+    contents: app.serviceManager.contents,
+    tracker
   });
 
   app.docRegistry.addWidgetFactory(factory);

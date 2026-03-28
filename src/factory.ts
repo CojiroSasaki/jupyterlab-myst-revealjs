@@ -1,6 +1,6 @@
 import { Cell } from '@jupyterlab/cells';
 import { ABCWidgetFactory, DocumentRegistry } from '@jupyterlab/docregistry';
-import { INotebookModel } from '@jupyterlab/notebook';
+import { INotebookModel, INotebookTracker } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { Contents } from '@jupyterlab/services';
 import { SlideshowContent } from './content';
@@ -15,12 +15,14 @@ export class SlideshowWidgetFactory extends ABCWidgetFactory<
   readonly rendermime: IRenderMimeRegistry;
   readonly contentFactory: Cell.IContentFactory;
   readonly contents: Contents.IManager;
+  readonly tracker: INotebookTracker;
 
   constructor(options: SlideshowWidgetFactory.IOptions) {
     super(options);
     this.rendermime = options.rendermime;
     this.contentFactory = options.contentFactory;
     this.contents = options.contents;
+    this.tracker = options.tracker;
   }
 
   protected createNewWidget(
@@ -34,7 +36,9 @@ export class SlideshowWidgetFactory extends ABCWidgetFactory<
     const slideBuilder = new SlideBuilder({
       model: context.model,
       rendermime,
-      contentFactory: this.contentFactory
+      contentFactory: this.contentFactory,
+      tracker: this.tracker,
+      context
     });
 
     const config = readSlideshowConfig(context.model.metadata);
@@ -54,5 +58,6 @@ export namespace SlideshowWidgetFactory {
     rendermime: IRenderMimeRegistry;
     contentFactory: Cell.IContentFactory;
     contents: Contents.IManager;
+    tracker: INotebookTracker;
   }
 }

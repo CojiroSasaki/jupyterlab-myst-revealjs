@@ -1,5 +1,6 @@
-import { Cell, CodeCell, ICellModel, ICodeCellModel } from '@jupyterlab/cells';
-import { INotebookModel } from '@jupyterlab/notebook';
+import { Cell, CodeCell, ICellModel, ICodeCellModel, MarkdownCell } from '@jupyterlab/cells';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { INotebookModel, INotebookTracker } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry, MimeModel } from '@jupyterlab/rendermime';
 import { Widget } from '@lumino/widgets';
 
@@ -27,6 +28,8 @@ export class SlideBuilder {
   private _model: INotebookModel;
   private _rendermime: IRenderMimeRegistry;
   private _contentFactory: Cell.IContentFactory;
+  private _tracker: INotebookTracker;
+  private _context: DocumentRegistry.IContext<INotebookModel>;
   private _codeCellEntries: ICodeCellEntry[] = [];
   private _isDisposed = false;
 
@@ -38,6 +41,8 @@ export class SlideBuilder {
     this._model = options.model;
     this._rendermime = options.rendermime;
     this._contentFactory = options.contentFactory;
+    this._tracker = options.tracker;
+    this._context = options.context;
   }
 
   get isDisposed(): boolean {
@@ -175,12 +180,13 @@ export class SlideBuilder {
    */
   private async _appendCell(section: HTMLElement): Promise<void> {
     const info = this._peek()!;
+    const cellIndex = this._pos;
     this._pos++;
 
     const node =
       info.cell.type === 'code'
         ? this._renderCodeCell(info.cell as ICodeCellModel, info.tags)
-        : await this._renderMarkdownCell(info.cell);
+        : await this._renderMarkdownCell(info.cell, cellIndex);
 
     this._applyGridwidth(node, info.tags);
 
@@ -285,10 +291,30 @@ export class SlideBuilder {
     return container;
   }
 
-  private async _renderMarkdownCell(cell: ICellModel): Promise<HTMLElement> {
+  private async _renderMarkdownCell(
+    cell: ICellModel,
+    cellIndex: number
+  ): Promise<HTMLElement> {
     const container = document.createElement('div');
     container.className = 'jp-Slideshow-markdownCell';
 
+    // Prefer the globally-processed DOM from NotebookPanel so that
+    // cross-slide equation references (label/eqref) are resolved.
+    const notebookPanel = this._tracker.find(
+      w => w.context === this._context
+    );
+    if (notebookPanel) {
+      const cellWidget = notebookPanel.content.widgets[cellIndex];
+      if (cellWidget instanceof MarkdownCell) {
+        const mystNode = cellWidget.node.querySelector('.myst');
+        if (mystNode) {
+          container.appendChild(mystNode.cloneNode(true));
+          return container;
+        }
+      }
+    }
+
+    // Fallback: independent rendering (no cross-slide equation resolution)
     const source = cell.sharedModel.getSource();
     const renderer = this._rendermime.createRenderer('text/markdown');
     const model = new MimeModel({
@@ -307,5 +333,7 @@ export namespace SlideBuilder {
     model: INotebookModel;
     rendermime: IRenderMimeRegistry;
     contentFactory: Cell.IContentFactory;
+    tracker: INotebookTracker;
+    context: DocumentRegistry.IContext<INotebookModel>;
   }
 }
