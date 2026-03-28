@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.2 (2026-03-28)
+
+### Bug Fixes
+
+- Fix cross-slide equation references by cloning NotebookPanel MyST DOM instead of independent rendering
+- Fix heading scrollbar and spacing issues with CJK fonts by setting `line-height: 1.5`
+
 ## v1.0.1 (2026-03-24)
 
 ### Bug Fixes
