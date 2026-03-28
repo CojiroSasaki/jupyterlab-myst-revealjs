@@ -98,7 +98,9 @@ function createBuilder(cells: ICellModel[]): SlideBuilder {
   return new SlideBuilder({
     model: createNotebookModel(cells),
     rendermime: createMockRendermime(),
-    contentFactory: mockContentFactory
+    contentFactory: mockContentFactory,
+    tracker: { find: () => null } as any,
+    context: {} as any
   });
 }
 
