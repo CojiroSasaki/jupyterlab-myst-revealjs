@@ -1,4 +1,10 @@
-import { Cell, CodeCell, ICellModel, ICodeCellModel, MarkdownCell } from '@jupyterlab/cells';
+import {
+  Cell,
+  CodeCell,
+  ICellModel,
+  ICodeCellModel,
+  MarkdownCell
+} from '@jupyterlab/cells';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { INotebookModel, INotebookTracker } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry, MimeModel } from '@jupyterlab/rendermime';
@@ -300,9 +306,7 @@ export class SlideBuilder {
 
     // Prefer the globally-processed DOM from NotebookPanel so that
     // cross-slide equation references (label/eqref) are resolved.
-    const notebookPanel = this._tracker.find(
-      w => w.context === this._context
-    );
+    const notebookPanel = this._tracker.find(w => w.context === this._context);
     if (notebookPanel) {
       const cellWidget = notebookPanel.content.widgets[cellIndex];
       if (cellWidget instanceof MarkdownCell) {
