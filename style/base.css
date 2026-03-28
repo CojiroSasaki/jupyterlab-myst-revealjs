@@ -21,6 +21,7 @@
 .jp-SlideshowContent .reveal h3,
 .jp-SlideshowContent .reveal h4 {
   text-transform: none;
+  line-height: 1.5;
 }
 
 /*
