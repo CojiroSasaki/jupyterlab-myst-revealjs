@@ -238,6 +238,36 @@ describe('SlideBuilder', () => {
       expect(fragmentNode.classList.contains('fragment')).toBe(true);
     });
 
+    it('groups "-" after fragment with the same data-fragment-index', async () => {
+      const cells = [
+        createCellModel(
+          'markdown',
+          { slideshow: { slide_type: 'slide' } },
+          '# Title'
+        ),
+        createCellModel(
+          'markdown',
+          { slideshow: { slide_type: 'fragment' } },
+          'left column'
+        ),
+        createCellModel(
+          'markdown',
+          { slideshow: { slide_type: '-' } },
+          'right column'
+        )
+      ];
+      const dom = await buildSlides(cells);
+
+      const inner = getInnerSections(dom)[0];
+      const fragmentNode = inner.children[1] as HTMLElement;
+      const contNode = inner.children[2] as HTMLElement;
+      expect(fragmentNode.classList.contains('fragment')).toBe(true);
+      expect(contNode.classList.contains('fragment')).toBe(true);
+      expect(fragmentNode.getAttribute('data-fragment-index')).toBe(
+        contNode.getAttribute('data-fragment-index')
+      );
+    });
+
     it('wraps notes cells in an aside element', async () => {
       const cells = [
         createCellModel(

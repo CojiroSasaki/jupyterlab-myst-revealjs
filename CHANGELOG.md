@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.0 (2026-03-29)
+
+### Changes
+
+- Change `"-"` slide_type semantics to RISE-compatible behavior: continuation cells now inherit the preceding cell's slide type. In particular, `"-"` after a `fragment` cell appears simultaneously with it (same `data-fragment-index`), enabling natural use of `gridwidth` and `fragment` together.
+
 ## v1.0.2 (2026-03-28)
 
 ### Bug Fixes

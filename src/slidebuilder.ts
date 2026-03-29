@@ -146,13 +146,14 @@ export class SlideBuilder {
       await this._appendCell(section);
     }
 
-    // Consume continuation cells
+    // Consume cell groups: each base cell followed by its "-" continuations
+    let fragmentIndex = -1;
     let info: ICellSlideInfo | null;
     while ((info = this._peek()) !== null) {
       if (info.slideType === 'slide' || info.slideType === 'subslide') {
         break;
       }
-      await this._appendCell(section);
+      fragmentIndex = await this._parseCellGroup(section, fragmentIndex);
     }
 
     parent.appendChild(section);
@@ -181,10 +182,56 @@ export class SlideBuilder {
   // ── Cell rendering ─────────────────────────────────────
 
   /**
-   * Consume one cell and append its DOM node to the section.
-   * Applies fragment class and notes wrapper based on slide_type.
+   * cell_group → base_cell ("-")*
+   *
+   * Consumes one base cell and all following "-" continuation cells.
+   * Continuation cells inherit the base cell's slide type (RISE semantics).
+   * Returns the updated fragment index.
    */
-  private async _appendCell(section: HTMLElement): Promise<void> {
+  private async _parseCellGroup(
+    section: HTMLElement,
+    fragmentIndex: number
+  ): Promise<number> {
+    const base = this._peek()!;
+
+    if (base.slideType === 'fragment') {
+      // New fragment group: continuations share the same data-fragment-index
+      fragmentIndex++;
+      const node = await this._consumeCell();
+      node.classList.add('fragment');
+      node.setAttribute('data-fragment-index', String(fragmentIndex));
+      section.appendChild(node);
+      while (this._peek()?.slideType === '-') {
+        const cont = await this._consumeCell();
+        cont.classList.add('fragment');
+        cont.setAttribute('data-fragment-index', String(fragmentIndex));
+        section.appendChild(cont);
+      }
+    } else if (base.slideType === 'notes') {
+      // Notes group: continuations go into the same <aside>
+      const aside = document.createElement('aside');
+      aside.className = 'notes';
+      aside.appendChild(await this._consumeCell());
+      while (this._peek()?.slideType === '-') {
+        aside.appendChild(await this._consumeCell());
+      }
+      section.appendChild(aside);
+    } else {
+      // Regular cell (or "-" with no prior typed context)
+      section.appendChild(await this._consumeCell());
+      while (this._peek()?.slideType === '-') {
+        section.appendChild(await this._consumeCell());
+      }
+    }
+
+    return fragmentIndex;
+  }
+
+  /**
+   * Consume one cell from the token stream and render it to a DOM node.
+   * Applies gridwidth and hide-cell tag handling.
+   */
+  private async _consumeCell(): Promise<HTMLElement> {
     const info = this._peek()!;
     const cellIndex = this._pos;
     this._pos++;
@@ -200,17 +247,14 @@ export class SlideBuilder {
       node.classList.add('jp-Slideshow-hideCell');
     }
 
-    if (info.slideType === 'fragment') {
-      node.classList.add('fragment');
-      section.appendChild(node);
-    } else if (info.slideType === 'notes') {
-      const aside = document.createElement('aside');
-      aside.className = 'notes';
-      aside.appendChild(node);
-      section.appendChild(aside);
-    } else {
-      section.appendChild(node);
-    }
+    return node;
+  }
+
+  /**
+   * Consume one cell and append its DOM node to the parent element.
+   */
+  private async _appendCell(parent: HTMLElement): Promise<void> {
+    parent.appendChild(await this._consumeCell());
   }
 
   private _disposeCodeCells(): void {
