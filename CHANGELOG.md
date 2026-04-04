@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.2.0 (2026-04-04)
+
+### Breaking Changes
+
+- Replace `center` (boolean) with `slide_state` (string: `"top"`, `"middle"`, `"bottom"`) for vertical alignment control
+- Rename `slideNumber` to `slide_number` in notebook metadata (all `myst-revealjs` keys are now snake_case)
+
+### Features
+
+- Per-slide vertical alignment via `slideshow.slide_state` cell metadata, overriding the notebook-level `slide_state` default
+- `data-state` attribute on `<section>` elements for custom CSS hooks via `slideshow.slide_state` cell metadata
+
 ## v1.1.0 (2026-03-29)
 
 ### Changes

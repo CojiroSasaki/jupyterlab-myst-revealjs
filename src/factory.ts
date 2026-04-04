@@ -33,15 +33,16 @@ export class SlideshowWidgetFactory extends ABCWidgetFactory<
       resolver: context.urlResolver
     });
 
+    const config = readSlideshowConfig(context.model.metadata);
+
     const slideBuilder = new SlideBuilder({
       model: context.model,
       rendermime,
       contentFactory: this.contentFactory,
       tracker: this.tracker,
-      context
+      context,
+      config
     });
-
-    const config = readSlideshowConfig(context.model.metadata);
     const content = new SlideshowContent(config);
 
     return new SlideshowPanel({

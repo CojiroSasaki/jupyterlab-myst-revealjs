@@ -28,13 +28,15 @@ const VALID_TRANSITIONS = [
   'zoom'
 ];
 
+const VALID_SLIDE_STATES = ['top', 'middle', 'bottom'];
+
 const DEFAULTS: Required<ISlideshowConfig> = {
   theme: 'white',
   transition: 'slide',
   controls: true,
   progress: true,
-  slideNumber: false,
-  center: true,
+  slide_number: false,
+  slide_state: 'middle',
   width: 960,
   height: 700,
   scroll: false
@@ -45,8 +47,8 @@ export interface ISlideshowConfig {
   transition?: string;
   controls?: boolean;
   progress?: boolean;
-  slideNumber?: boolean;
-  center?: boolean;
+  slide_number?: boolean;
+  slide_state?: string;
   width?: number;
   height?: number;
   scroll?: boolean;
@@ -72,11 +74,13 @@ export function readSlideshowConfig(
       typeof raw.controls === 'boolean' ? raw.controls : DEFAULTS.controls,
     progress:
       typeof raw.progress === 'boolean' ? raw.progress : DEFAULTS.progress,
-    slideNumber:
-      typeof raw.slideNumber === 'boolean'
-        ? raw.slideNumber
-        : DEFAULTS.slideNumber,
-    center: typeof raw.center === 'boolean' ? raw.center : DEFAULTS.center,
+    slide_number:
+      typeof raw.slide_number === 'boolean'
+        ? raw.slide_number
+        : DEFAULTS.slide_number,
+    slide_state: VALID_SLIDE_STATES.includes(raw.slide_state ?? '')
+      ? raw.slide_state!
+      : DEFAULTS.slide_state,
     width: typeof raw.width === 'number' ? raw.width : DEFAULTS.width,
     height: typeof raw.height === 'number' ? raw.height : DEFAULTS.height,
     scroll: typeof raw.scroll === 'boolean' ? raw.scroll : DEFAULTS.scroll

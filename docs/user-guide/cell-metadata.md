@@ -24,6 +24,35 @@ the same metadata used by RISE and nbconvert.
 The first cell implicitly starts a slide even without an explicit
 `"slide"` type.
 
+## Slide state
+
+The `slideshow.slide_state` cell metadata overrides the notebook-level
+`slide_state` for individual slides. This controls vertical alignment of
+slide content.
+
+```json
+{
+  "slideshow": {
+    "slide_type": "slide",
+    "slide_state": "middle"
+  }
+}
+```
+
+| Value      | Behavior                                    |
+| ---------- | ------------------------------------------- |
+| `"top"`    | Align content to the top of the slide.      |
+| `"middle"` | Vertically center content within the slide. |
+| `"bottom"` | Align content to the bottom of the slide.   |
+
+When omitted, the slide uses the notebook-level `slide_state` setting
+(default: `"middle"`). Like background attributes, `slide_state` applies
+only to `"slide"` and `"subslide"` cells. Continuation cells (`"-"`) do
+not carry this attribute.
+
+A typical use case is setting `slide_state: "top"` globally for body slides
+and overriding with `"middle"` on title or section divider slides.
+
 ## Slide backgrounds
 
 Per-slide background settings are specified in the `slideshow` metadata with the

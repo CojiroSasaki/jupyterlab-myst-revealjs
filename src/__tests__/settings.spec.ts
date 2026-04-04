@@ -7,8 +7,8 @@ describe('readSlideshowConfig', () => {
     transition: 'slide',
     controls: true,
     progress: true,
-    slideNumber: false,
-    center: true,
+    slide_number: false,
+    slide_state: 'middle',
     width: 960,
     height: 700,
     scroll: false
@@ -33,8 +33,8 @@ describe('readSlideshowConfig', () => {
         transition: 'fade',
         controls: false,
         progress: false,
-        slideNumber: true,
-        center: false,
+        slide_number: true,
+        slide_state: 'top',
         width: 1280,
         height: 720,
         scroll: true
@@ -46,8 +46,8 @@ describe('readSlideshowConfig', () => {
       transition: 'fade',
       controls: false,
       progress: false,
-      slideNumber: true,
-      center: false,
+      slide_number: true,
+      slide_state: 'top',
       width: 1280,
       height: 720,
       scroll: true

@@ -117,16 +117,21 @@ export class SlideshowContent extends Widget {
     for (const section of Array.from(sections)) {
       const el = section as HTMLElement;
 
+      const state = el.getAttribute('data-state') ?? '';
+
       if (this._config.scroll && el.scrollHeight > threshold) {
         // Scrolling section: position below header, constrain height
         el.style.top = headerH + 'px';
         el.style.height = threshold + 'px';
         el.style.overflowY = 'auto';
-      } else if (headerH > 0 || footerH > 0) {
-        // Non-scrolling section: center within available area
+      } else if (state === 'middle') {
+        // Vertically center content within available area
         const contentH = el.scrollHeight;
         const top = headerH + Math.max((availableH - contentH) / 2, 0);
         el.style.top = top + 'px';
+      } else if (headerH > 0) {
+        // Position below header
+        el.style.top = headerH + 'px';
       }
     }
   }
@@ -178,8 +183,8 @@ export class SlideshowContent extends Widget {
       height: c.height,
       controls: c.controls,
       progress: c.progress,
-      slideNumber: c.slideNumber,
-      center: c.center,
+      slideNumber: c.slide_number,
+      center: false,
       transition: c.transition as
         | 'none'
         | 'fade'

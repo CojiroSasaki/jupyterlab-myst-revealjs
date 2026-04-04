@@ -9,6 +9,7 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { INotebookModel, INotebookTracker } from '@jupyterlab/notebook';
 import { IRenderMimeRegistry, MimeModel } from '@jupyterlab/rendermime';
 import { Widget } from '@lumino/widgets';
+import type { ISlideshowConfig } from './settings';
 
 export type SlideType =
   | 'slide'
@@ -23,6 +24,7 @@ interface ICellSlideInfo {
   tags: string[];
   cell: ICellModel;
   backgroundAttrs: Record<string, string>;
+  state: string | null;
 }
 
 interface ICodeCellEntry {
@@ -36,6 +38,7 @@ export class SlideBuilder {
   private _contentFactory: Cell.IContentFactory;
   private _tracker: INotebookTracker;
   private _context: DocumentRegistry.IContext<INotebookModel>;
+  private _config: Required<ISlideshowConfig>;
   private _codeCellEntries: ICodeCellEntry[] = [];
   private _isDisposed = false;
 
@@ -49,6 +52,7 @@ export class SlideBuilder {
     this._contentFactory = options.contentFactory;
     this._tracker = options.tracker;
     this._context = options.context;
+    this._config = options.config;
   }
 
   get isDisposed(): boolean {
@@ -142,6 +146,9 @@ export class SlideBuilder {
       // Apply background attributes from the leading cell
       for (const [attr, value] of Object.entries(first.backgroundAttrs)) {
         section.setAttribute(attr, value);
+      }
+      if (first.state) {
+        section.setAttribute('data-state', first.state);
       }
       await this._appendCell(section);
     }
@@ -299,7 +306,12 @@ export class SlideBuilder {
       }
     }
 
-    return { slideType, tags, cell, backgroundAttrs };
+    const state =
+      slideshow && typeof slideshow.slide_state === 'string'
+        ? slideshow.slide_state
+        : this._config.slide_state;
+
+    return { slideType, tags, cell, backgroundAttrs, state };
   }
 
   private _applyGridwidth(node: HTMLElement, tags: string[]): void {
@@ -383,5 +395,6 @@ export namespace SlideBuilder {
     contentFactory: Cell.IContentFactory;
     tracker: INotebookTracker;
     context: DocumentRegistry.IContext<INotebookModel>;
+    config: Required<ISlideshowConfig>;
   }
 }

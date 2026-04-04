@@ -94,14 +94,37 @@ function createMockRendermime(): IRenderMimeRegistry {
 
 const mockContentFactory = {} as Cell.IContentFactory;
 
-function createBuilder(cells: ICellModel[]): SlideBuilder {
+const defaultConfig = {
+  theme: 'white',
+  transition: 'slide',
+  controls: true,
+  progress: true,
+  slide_number: false,
+  slide_state: 'middle',
+  width: 960,
+  height: 700,
+  scroll: false
+};
+
+function createBuilder(
+  cells: ICellModel[],
+  config = defaultConfig
+): SlideBuilder {
   return new SlideBuilder({
     model: createNotebookModel(cells),
     rendermime: createMockRendermime(),
     contentFactory: mockContentFactory,
     tracker: { find: () => null } as any,
-    context: {} as any
+    context: {} as any,
+    config
   });
+}
+
+async function buildSlidesWithConfig(
+  cells: ICellModel[],
+  config: typeof defaultConfig
+): Promise<HTMLElement> {
+  return createBuilder(cells, config).buildAll();
 }
 
 async function buildSlides(cells: ICellModel[]): Promise<HTMLElement> {
@@ -387,6 +410,58 @@ describe('SlideBuilder', () => {
 
       const inner = getInnerSections(dom)[0];
       expect(inner.getAttribute('data-background-color')).toBeNull();
+    });
+  });
+
+  describe('data-state attribute', () => {
+    it('sets data-state from cell slide_state metadata', async () => {
+      const cells = [
+        createCellModel('markdown', {
+          slideshow: { slide_type: 'slide', slide_state: 'top' }
+        })
+      ];
+      const dom = await buildSlides(cells);
+
+      const inner = getInnerSections(dom)[0];
+      expect(inner.getAttribute('data-state')).toBe('top');
+    });
+
+    it('falls back to global slide_state when cell slide_state is absent', async () => {
+      const cells = [
+        createCellModel('markdown', {
+          slideshow: { slide_type: 'slide' }
+        })
+      ];
+      const dom = await buildSlides(cells);
+
+      const inner = getInnerSections(dom)[0];
+      expect(inner.getAttribute('data-state')).toBe('middle');
+    });
+
+    it('cell slide_state overrides global slide_state', async () => {
+      const cells = [
+        createCellModel('markdown', {
+          slideshow: { slide_type: 'slide', slide_state: 'top' }
+        })
+      ];
+      const config = { ...defaultConfig, slide_state: 'middle' };
+      const dom = await buildSlidesWithConfig(cells, config);
+
+      const inner = getInnerSections(dom)[0];
+      expect(inner.getAttribute('data-state')).toBe('top');
+    });
+
+    it('does not set data-state from continuation cells', async () => {
+      const cells = [
+        createCellModel('markdown', { slideshow: { slide_type: 'slide' } }),
+        createCellModel('markdown', {
+          slideshow: { slide_type: '-', slide_state: 'top' }
+        })
+      ];
+      const dom = await buildSlides(cells);
+
+      const inner = getInnerSections(dom)[0];
+      expect(inner.getAttribute('data-state')).toBe('middle');
     });
   });
 
