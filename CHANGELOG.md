@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.0 (2026-04-05)
+
+### Features
+
+- Add equation reference hover tooltip: hovering over `{eq}` references shows the referenced equation in a tooltip, including cross-slide references
+
 ## v1.2.0 (2026-04-04)
 
 ### Breaking Changes

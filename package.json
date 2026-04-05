@@ -1,6 +1,6 @@
 {
     "name": "jupyterlab-myst-revealjs",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "description": "Live reveal.js slideshow for MyST Markdown notebooks in JupyterLab.",
     "keywords": [
         "jupyter",

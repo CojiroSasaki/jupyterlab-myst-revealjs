@@ -10,6 +10,7 @@ export class SlideshowContent extends Widget {
   private _slidesDiv: HTMLDivElement;
   private _config: Required<ISlideshowConfig>;
   private _customStyleEl: HTMLStyleElement | null = null;
+  private _tooltipEl: HTMLDivElement | null = null;
 
   constructor(config: Required<ISlideshowConfig>) {
     super();
@@ -48,6 +49,7 @@ export class SlideshowContent extends Widget {
 
   async updateSlides(slidesContainer: HTMLElement): Promise<void> {
     this._slidesDiv.replaceChildren(...Array.from(slidesContainer.childNodes));
+    this._attachEquationTooltips();
 
     if (!this._reveal && this.isAttached) {
       await this._initReveal();
@@ -167,6 +169,59 @@ export class SlideshowContent extends Widget {
       this._reveal = null;
     }
     super.dispose();
+  }
+
+  private _attachEquationTooltips(): void {
+    this._tooltipEl?.remove();
+    this._tooltipEl = null;
+
+    const links = this._slidesDiv.querySelectorAll('a.hover-link');
+    for (const link of Array.from(links)) {
+      link.addEventListener('mouseenter', (e: Event) => {
+        const anchor = e.currentTarget as HTMLAnchorElement;
+        const targetId = anchor.getAttribute('href')?.replace(/^#/, '');
+        if (!targetId) {
+          return;
+        }
+
+        const targetEl = this._slidesDiv.querySelector(
+          `#${CSS.escape(targetId)}`
+        );
+        if (!targetEl) {
+          return;
+        }
+
+        if (!targetEl.querySelector('.katex-display')) {
+          return;
+        }
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'jp-Slideshow-eqTooltip';
+        tooltip.appendChild(targetEl.cloneNode(true));
+
+        // The tooltip is placed inside .reveal but outside .slides,
+        // so it inherits .reveal's font-size (e.g. 42px from the
+        // theme) instead of the .myst-scoped size used on the slide.
+        // Copy the original element's computed font-size, scaled to
+        // 120% for better readability in the tooltip context.
+        const origFontSize = parseFloat(getComputedStyle(targetEl).fontSize);
+        tooltip.style.fontSize = origFontSize * 1.2 + 'px';
+
+        // Position near the link (in .reveal coordinates)
+        const rect = anchor.getBoundingClientRect();
+        const containerRect = this._revealDiv.getBoundingClientRect();
+        tooltip.style.left = rect.left - containerRect.left + 'px';
+        tooltip.style.top = rect.bottom - containerRect.top + 4 + 'px';
+
+        this._revealDiv.appendChild(tooltip);
+        this._tooltipEl = tooltip;
+      });
+
+      link.addEventListener('mouseleave', () => {
+        this._tooltipEl?.remove();
+        this._tooltipEl = null;
+      });
+    }
   }
 
   private async _initReveal(): Promise<void> {

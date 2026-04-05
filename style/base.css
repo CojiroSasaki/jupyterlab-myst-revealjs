@@ -185,3 +185,25 @@
 .jp-Slideshow-footer {
   bottom: 0;
 }
+
+/* Equation reference hover tooltip */
+.jp-Slideshow-eqTooltip {
+  position: absolute;
+  z-index: 100;
+  background: var(--r-background-color, #fff);
+  color: var(--r-main-color, #000);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  padding: 8px 12px;
+  width: fit-content;
+  pointer-events: none;
+}
+
+.jp-Slideshow-eqTooltip .katex-display {
+  margin: 0;
+}
+
+.jp-Slideshow-eqTooltip .overflow-x-auto,
+.jp-Slideshow-eqTooltip .overflow-y-hidden {
+  overflow: visible !important;
+}
