@@ -186,8 +186,8 @@
   bottom: 0;
 }
 
-/* Equation reference hover tooltip */
-.jp-Slideshow-eqTooltip {
+/* Cross-reference hover tooltip (equations, figures, ...) */
+.jp-Slideshow-refTooltip {
   position: absolute;
   z-index: 100;
   background: var(--r-background-color, #fff);
@@ -196,14 +196,26 @@
   box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
   padding: 8px 12px;
   width: fit-content;
+  max-width: 60vw;
+  max-height: 60vh;
+  overflow: auto;
   pointer-events: none;
 }
 
-.jp-Slideshow-eqTooltip .katex-display {
+.jp-Slideshow-refTooltip .katex-display {
   margin: 0;
 }
 
-.jp-Slideshow-eqTooltip .overflow-x-auto,
-.jp-Slideshow-eqTooltip .overflow-y-hidden {
+.jp-Slideshow-refTooltip .overflow-x-auto,
+.jp-Slideshow-refTooltip .overflow-y-hidden {
   overflow: visible !important;
+}
+
+.jp-Slideshow-refTooltip figure {
+  margin: 0;
+}
+
+.jp-Slideshow-refTooltip img {
+  max-width: 100%;
+  height: auto;
 }

@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.4.0 (2026-04-26)
+
+### Features
+
+- Add figure cross-reference hover tooltip: hovering over `[](#fig:label)` references shows the referenced figure in a tooltip, including cross-slide references
+- Tooltip placement now adapts to the slide viewport — flips above the link when there is no room below, and clips horizontally to stay inside the slide. This also improves the existing equation tooltip behavior near slide edges
+
+### Internal
+
+- Rename internal CSS class `jp-Slideshow-eqTooltip` to `jp-Slideshow-refTooltip` (used by both equation and figure tooltips). Note for users with custom CSS targeting this class
+
 ## v1.3.0 (2026-04-05)
 
 ### Features

@@ -49,7 +49,7 @@ export class SlideshowContent extends Widget {
 
   async updateSlides(slidesContainer: HTMLElement): Promise<void> {
     this._slidesDiv.replaceChildren(...Array.from(slidesContainer.childNodes));
-    this._attachEquationTooltips();
+    this._attachReferenceTooltips();
 
     if (!this._reveal && this.isAttached) {
       await this._initReveal();
@@ -171,7 +171,32 @@ export class SlideshowContent extends Widget {
     super.dispose();
   }
 
-  private _attachEquationTooltips(): void {
+  /**
+   * Resolve the tooltip content for a cross-reference target.
+   *
+   * Returns the kind of reference and the element to clone into the
+   * tooltip, or null if the target is not a supported reference type.
+   * Future kinds (table, section) can be added here.
+   */
+  private _resolveTooltipTarget(
+    targetEl: Element
+  ): { kind: 'equation' | 'figure'; node: Element } | null {
+    if (targetEl.querySelector('.katex-display')) {
+      return { kind: 'equation', node: targetEl };
+    }
+
+    if (targetEl.tagName === 'FIGURE') {
+      return { kind: 'figure', node: targetEl };
+    }
+    const figure = targetEl.querySelector('figure');
+    if (figure) {
+      return { kind: 'figure', node: figure };
+    }
+
+    return null;
+  }
+
+  private _attachReferenceTooltips(): void {
     this._tooltipEl?.remove();
     this._tooltipEl = null;
 
@@ -191,29 +216,59 @@ export class SlideshowContent extends Widget {
           return;
         }
 
-        if (!targetEl.querySelector('.katex-display')) {
+        const resolved = this._resolveTooltipTarget(targetEl);
+        if (!resolved) {
           return;
         }
 
         const tooltip = document.createElement('div');
-        tooltip.className = 'jp-Slideshow-eqTooltip';
-        tooltip.appendChild(targetEl.cloneNode(true));
+        tooltip.className = 'jp-Slideshow-refTooltip';
+        tooltip.appendChild(resolved.node.cloneNode(true));
 
         // The tooltip is placed inside .reveal but outside .slides,
-        // so it inherits .reveal's font-size (e.g. 42px from the
-        // theme) instead of the .myst-scoped size used on the slide.
-        // Copy the original element's computed font-size, scaled to
-        // 120% for better readability in the tooltip context.
-        const origFontSize = parseFloat(getComputedStyle(targetEl).fontSize);
-        tooltip.style.fontSize = origFontSize * 1.2 + 'px';
+        // so it would otherwise inherit .reveal's font-size (e.g. 42px
+        // from the theme) instead of the .myst-scoped size used on the
+        // slide. Copy the original element's computed font-size; for
+        // equations apply a 1.2x boost for readability.
+        const scale = resolved.kind === 'equation' ? 1.2 : 1.0;
+        const origFontSize = parseFloat(
+          getComputedStyle(resolved.node).fontSize
+        );
+        tooltip.style.fontSize = origFontSize * scale + 'px';
 
-        // Position near the link (in .reveal coordinates)
+        // Append hidden so we can measure the tooltip, then place it
+        // within the container with vertical flip and horizontal
+        // clipping so it never spills out of the slide viewport.
+        tooltip.style.visibility = 'hidden';
+        this._revealDiv.appendChild(tooltip);
+
         const rect = anchor.getBoundingClientRect();
         const containerRect = this._revealDiv.getBoundingClientRect();
-        tooltip.style.left = rect.left - containerRect.left + 'px';
-        tooltip.style.top = rect.bottom - containerRect.top + 4 + 'px';
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const margin = 4;
 
-        this._revealDiv.appendChild(tooltip);
+        const spaceBelow = containerRect.bottom - rect.bottom;
+        let top: number;
+        if (spaceBelow >= tooltipRect.height + margin) {
+          top = rect.bottom - containerRect.top + margin;
+        } else {
+          // Flip above the link, but never past the container top
+          top = Math.max(
+            0,
+            rect.top - containerRect.top - tooltipRect.height - margin
+          );
+        }
+
+        let left = rect.left - containerRect.left;
+        const maxLeft = containerRect.width - tooltipRect.width;
+        if (left > maxLeft) {
+          left = Math.max(0, maxLeft);
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+        tooltip.style.visibility = '';
+
         this._tooltipEl = tooltip;
       });
 
