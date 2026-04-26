@@ -236,6 +236,14 @@ export class SlideshowContent extends Widget {
         );
         tooltip.style.fontSize = origFontSize * scale + 'px';
 
+        // For figures, mirror the source's rendered width so an image
+        // inside a width-constrained ancestor (e.g. gridwidth-1-2)
+        // does not balloon back to its natural size in the tooltip.
+        if (resolved.kind === 'figure') {
+          tooltip.style.maxWidth =
+            resolved.node.getBoundingClientRect().width + 'px';
+        }
+
         // Append hidden so we can measure the tooltip, then place it
         // within the container with vertical flip and horizontal
         // clipping so it never spills out of the slide viewport.

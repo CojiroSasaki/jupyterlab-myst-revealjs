@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.1 (2026-04-26)
+
+### Bug Fixes
+
+- Figure cross-reference tooltip: when the source figure lives in a width-constrained ancestor (e.g. `gridwidth-1-2`), the tooltip image previously rendered at its natural size and could overflow the slide viewport. The tooltip now mirrors the source's rendered width via `max-width`, so the cloned image stays at the same visual size as on the slide.
+
 ## v1.4.0 (2026-04-26)
 
 ### Features
