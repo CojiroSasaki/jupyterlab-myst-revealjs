@@ -89,7 +89,11 @@ jobs:
   integration-tests:
     name: Integration tests
     needs: build
-    runs-on: ubuntu-latest
+    # Pinned to 22.04: chromium's "extracting archive" step in
+    # `playwright install` hangs on the ubuntu-24.04 runner image
+    # (cdn download succeeds, extraction never completes). Revisit
+    # once Playwright/galata ships a 24.04-compatible install.
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
 
     env:
@@ -127,10 +131,6 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
 
     - name: Install browser
-      env:
-        # Surface the exact step where the chromium install stalls in CI
-        # (download / extracting / validating). Temporary diagnostic.
-        DEBUG: pw:install
       run: |
         set -eux
         jlpm playwright install-deps
