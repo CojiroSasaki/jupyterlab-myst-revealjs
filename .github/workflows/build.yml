@@ -89,11 +89,7 @@ jobs:
   integration-tests:
     name: Integration tests
     needs: build
-    # Pinned to 22.04: chromium's "extracting archive" step in
-    # `playwright install` hangs on the ubuntu-24.04 runner image
-    # (cdn download succeeds, extraction never completes). Revisit
-    # once Playwright/galata ships a 24.04-compatible install.
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
 
     env:
