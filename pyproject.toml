@@ -28,6 +28,11 @@ dependencies = [
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
+[project.optional-dependencies]
+gridwidth = [
+    "jupyterlab-gridwidth>=0.4.3",
+]
+
 [tool.hatch.version]
 source = "nodejs"
 
