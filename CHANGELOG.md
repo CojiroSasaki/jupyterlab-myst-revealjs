@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.2 (2026-06-06)
+
+### Bug Fixes
+
+- Figure cross-reference tooltip: when the referenced figure lives on a different (hidden) slide, its measured width was `0` (reveal.js hides off-screen slides with `display: none`), collapsing the tooltip to about one character wide. The tooltip now falls back to the visible slide container width when the source width is unmeasurable, so cross-slide figure references render at full width. Same-slide references keep mirroring the source's rendered width.
+
 ## v1.4.1 (2026-04-26)
 
 ### Bug Fixes

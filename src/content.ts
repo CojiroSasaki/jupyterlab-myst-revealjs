@@ -239,9 +239,14 @@ export class SlideshowContent extends Widget {
         // For figures, mirror the source's rendered width so an image
         // inside a width-constrained ancestor (e.g. gridwidth-1-2)
         // does not balloon back to its natural size in the tooltip.
+        // When the figure lives on another (hidden) slide its measured
+        // width is 0, so fall back to the visible slide container width.
         if (resolved.kind === 'figure') {
+          const sourceWidth = resolved.node.getBoundingClientRect().width;
           tooltip.style.maxWidth =
-            resolved.node.getBoundingClientRect().width + 'px';
+            (sourceWidth > 0
+              ? sourceWidth
+              : this._slidesDiv.getBoundingClientRect().width) + 'px';
         }
 
         // Append hidden so we can measure the tooltip, then place it
