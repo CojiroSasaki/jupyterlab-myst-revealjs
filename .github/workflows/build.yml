@@ -127,22 +127,14 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
 
     - name: Install browser
+      env:
+        # Surface the exact step where the chromium install stalls in CI
+        # (download / extracting / validating). Temporary diagnostic.
+        DEBUG: pw:install
       run: |
         set -eux
         jlpm playwright install-deps
-        # Chromium downloads from cdn.playwright.dev occasionally stall
-        # after reaching 100%, leaving the connection hung. Bound each
-        # attempt with a hard timeout and retry so a stalled download is
-        # killed and re-fetched instead of hanging the whole job.
-        for attempt in 1 2 3; do
-          if timeout 300 jlpm playwright install chromium; then
-            exit 0
-          fi
-          echo "playwright install attempt ${attempt} failed or timed out; retrying"
-          sleep 10
-        done
-        echo "playwright install chromium failed after 3 attempts"
-        exit 1
+        jlpm playwright install chromium
       working-directory: ui-tests
 
     - name: Execute integration tests
