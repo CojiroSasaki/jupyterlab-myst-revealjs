@@ -9,3 +9,10 @@
   font-size: 0.4em;
   color: #999;
 }
+
+/* Code cells: one variable scales input and output together, including the
+   tables inside HTML outputs.  Use --myst-revealjs-input-font-size or
+   --myst-revealjs-output-font-size to size either side on its own. */
+.reveal .slides {
+  --myst-revealjs-codecell-font-size: 12px;
+}

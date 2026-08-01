@@ -752,3 +752,7 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,node,jupyternotebooks,visualstudiocode,linux,windows,macos,latex
+
+# Local jupytext pairing for the example notebooks (not project tooling)
+examples/jupytext.toml
+examples/*.py

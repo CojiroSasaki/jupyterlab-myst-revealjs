@@ -119,6 +119,59 @@
   overflow: hidden !important;
 }
 
+/* Code cell font size.
+ *
+ * JupyterLab pins absolute sizes throughout a cell: .cm-editor and the prompts
+ * use --jp-code-font-size, rendermime declares --jp-content-font-size1 on
+ * .jp-RenderedHTMLCommon, --jp-ui-font-size1 on the tables inside it, and
+ * --jp-code-font-size on the <pre> of text outputs.  Every one of those cuts the
+ * inheritance chain, so a font size set on the slide does not reach the cell --
+ * most visibly on HTML tables such as pandas DataFrames.
+ *
+ * Anchor the input and output wrappers, then redefine the pinned variables as
+ * 1em further down so each declaration resolves against its anchor.  Three
+ * variables drive it, resolved at the point of use so that a declaration on any
+ * ancestor (.reveal .slides, a single section, ...) takes effect:
+ *
+ *   --myst-revealjs-codecell-font-size    input and output together
+ *   --myst-revealjs-input-font-size   input only, wins over the shared one
+ *   --myst-revealjs-output-font-size  output only, wins over the shared one
+ *
+ * Left unset, each side keeps its JupyterLab default.  Note that the fallback
+ * chain has to live here rather than in a derived variable: custom property
+ * substitution is resolved on the element that declares it, so a declaration on
+ * a descendant could not feed back into it. */
+.jp-SlideshowContent .jp-CodeCell .jp-Cell-inputWrapper {
+  font-size: var(
+    --myst-revealjs-input-font-size,
+    var(--myst-revealjs-codecell-font-size, var(--jp-code-font-size))
+  );
+}
+
+.jp-SlideshowContent .jp-CodeCell .jp-Cell-outputWrapper {
+  font-size: var(
+    --myst-revealjs-output-font-size,
+    var(--myst-revealjs-codecell-font-size, var(--jp-content-font-size1))
+  );
+}
+
+.jp-SlideshowContent .jp-CodeCell .cm-editor,
+.jp-SlideshowContent .jp-OutputArea-output {
+  --jp-content-font-size1: 1em;
+  --jp-ui-font-size1: 1em;
+  --jp-code-font-size: 1em;
+}
+
+/* Prompts follow the cell font size as well.  Their width is a fixed pixel
+ * value in JupyterLab while the text is clipped with an ellipsis, so express it
+ * in em: em resolves against the element's own font size, which keeps the
+ * default 64px / 13px ratio at any size. */
+.jp-SlideshowContent .jp-InputPrompt,
+.jp-SlideshowContent .jp-OutputPrompt {
+  --jp-code-font-size: 1em;
+  --jp-cell-prompt-width: 4.9em;
+}
+
 /* Focus indicator for code cell containers (box-shadow avoids clipping by section overflow) */
 .jp-SlideshowContent .jp-Slideshow-codeCellContainer:focus,
 .jp-SlideshowContent .jp-Slideshow-codeCellContainer:focus-visible,

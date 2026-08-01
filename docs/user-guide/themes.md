@@ -55,6 +55,33 @@ overlay elements on every slide. Style them in your custom CSS:
 }
 ```
 
+### Code cell font size
+
+JupyterLab renders code cells at fixed sizes that do not follow the surrounding
+text. To scale a whole code cell, set `--myst-revealjs-codecell-font-size`:
+
+```css
+.reveal .slides {
+  --myst-revealjs-codecell-font-size: 20px;
+}
+```
+
+This covers the editor, the execution prompts, and every output type: text
+output, rendered HTML, and the tables inside it, such as pandas DataFrames.
+
+Two more variables size either side on its own, and take precedence over the
+shared one:
+
+```css
+.reveal .slides {
+  --myst-revealjs-input-font-size: 18px;
+  --myst-revealjs-output-font-size: 24px;
+}
+```
+
+Left unset, each side keeps its JupyterLab default. Scope any of them to a
+single slide by using a `section` selector instead of `.reveal .slides`.
+
 ### Using online themes
 
 If you need a Google Fonts–dependent reveal.js theme, you can load the font and

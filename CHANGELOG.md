@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.5.0 (2026-08-01)
+
+Code cell rendering in slideshow mode has been reworked so that a cell — editor, prompts and outputs — scales as a single unit.
+
+### Features
+
+- Add three CSS custom properties for code cell font size, settable from `myst-revealjs.css`:
+  - `--myst-revealjs-codecell-font-size` — input and output together
+  - `--myst-revealjs-input-font-size` — input only, takes precedence over the shared one
+  - `--myst-revealjs-output-font-size` — output only, takes precedence over the shared one
+
+  They cover the editor, the execution prompts, text output, rendered HTML, and the tables inside it. Left unset, each side keeps its JupyterLab default. Declare them on `.reveal .slides` for the whole deck or on a `section` for a single slide.
+
+### Bug Fixes
+
+- Code cell outputs no longer ignore the font size set around them. JupyterLab declares absolute sizes on `.cm-editor`, on the prompts, on `.jp-RenderedHTMLCommon`, and on the tables inside it, and every one of those cuts the inheritance chain. The most visible symptom was a pandas DataFrame table staying at its default size while the rest of the cell was scaled down. Those declarations now resolve relative to the input and output wrappers.
+
+### Behavior Changes
+
+- With none of the new properties set, text output and the tables inside HTML output render at 14px instead of 13px, as does the output prompt. This unifies JupyterLab's split between UI and content font size defaults, a distinction that carries no meaning on a slide. Custom CSS that sets sizes explicitly is unaffected; only appearance that relied on the defaults shifts.
+- Execution prompt width is now proportional to the cell font size instead of a fixed 64px, so prompts such as `In [12]:` are not clipped by an ellipsis when the font is enlarged.
+
+### Documentation
+
+- New "Code cell font size" section in the theming guide.
+- The reference slideshow in `examples/` gains a DataFrame slide that shows text output and HTML output side by side.
+
 ## v1.4.2 (2026-06-06)
 
 ### Bug Fixes
