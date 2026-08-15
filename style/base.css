@@ -76,10 +76,15 @@
   display: none;
 }
 
-/* Slideshow cell containers: inherit reveal.js theme colors */
+/* Slideshow cell containers: inherit reveal.js theme colors.
+ * --jp-code-font-size is pinned at 13px by JupyterLab and reaches inline code,
+ * fenced code blocks and their highlighted contents; 1em hands them back to
+ * the text they sit in (see the font size block below). */
 .jp-Slideshow-markdownCell {
   text-align: left;
   color: inherit;
+
+  --jp-code-font-size: 1em;
 }
 
 /* Dark background slides: override JupyterLab color variables for markdown */
@@ -90,6 +95,33 @@
   --jp-content-font-color3: rgb(255 255 255 / 38%);
 
   color: #fff;
+}
+
+/* Markdown cell font size: keep tables and code tied to the surrounding text.
+ *
+ * Several declarations cut the inheritance chain inside a markdown cell:
+ *
+ * - Raw HTML blocks are wrapped by jupyterlab-myst in a .jp-RenderedHTMLCommon
+ *   element, which rendermime pins to --jp-content-font-size1.  The wrapper also
+ *   carries not-prose, which disables the prose rules and lets rendermime's
+ *   `.jp-RenderedHTMLCommon table` rule (--jp-ui-font-size1) win, so a raw HTML
+ *   table stays at a fixed 13px whatever the slide sets.  MyST tables escape
+ *   that but are scaled to 0.875em by the prose rules.
+ * - Fenced code blocks sit in a .myst-code wrapper carrying the Tailwind
+ *   text-sm utility, which is a rem value and therefore absolute; the reveal.js
+ *   theme then sizes the <pre> inside it at 0.55em of that.
+ *
+ * Anchor each wrapper back to its parent, then size tables and code at 1em so
+ * that pipe tables, list-table, the table directive, raw HTML, inline code and
+ * fenced code blocks all match the body text of the cell. */
+.jp-SlideshowContent .jp-Slideshow-markdownCell .jp-RenderedHTMLCommon,
+.jp-SlideshowContent .jp-Slideshow-markdownCell .myst-code {
+  font-size: 1em;
+}
+
+.jp-SlideshowContent .jp-Slideshow-markdownCell table,
+.jp-SlideshowContent .jp-Slideshow-markdownCell pre {
+  font-size: 1em;
 }
 
 /* Code cells in slides: override Lumino's default styling so the cell

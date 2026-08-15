@@ -55,6 +55,27 @@ overlay elements on every slide. Style them in your custom CSS:
 }
 ```
 
+### Markdown cell font size
+
+Markdown cells are rendered by jupyterlab-myst, which sizes their text with the
+JupyterLab content font size rather than the reveal.js theme font. Set the body
+size of every markdown cell on the `.myst` container:
+
+```css
+.reveal .slides .myst {
+  font-size: 24px;
+}
+```
+
+Everything in the cell follows it: tables — whether written as pipe tables,
+with the `list-table` or `table` directive, or as raw HTML — along with inline
+code and fenced code blocks. Headings keep their relative scale. As with the
+code cell variables, use a `section` selector to scope the size to a single
+slide.
+
+This covers code written in markdown cells only. Code cells have their own
+variables, described next.
+
 ### Code cell font size
 
 JupyterLab renders code cells at fixed sizes that do not follow the surrounding

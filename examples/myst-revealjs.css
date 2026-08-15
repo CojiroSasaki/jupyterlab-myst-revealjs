@@ -10,6 +10,15 @@
   color: #999;
 }
 
+/* Markdown cells: the body font size of every markdown cell.  Uncomment and
+   change the value to check that tables follow the surrounding text. */
+
+/*
+.reveal .slides .myst {
+  font-size: 20px;
+}
+*/
+
 /* Code cells: one variable scales input and output together, including the
    tables inside HTML outputs.  Use --myst-revealjs-input-font-size or
    --myst-revealjs-output-font-size to size either side on its own. */

@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.5.1 (2026-08-15)
+
+### Bug Fixes
+
+- Tables in markdown cells no longer ignore the font size of the text around them. A table written in raw HTML is wrapped by jupyterlab-myst in a `.jp-RenderedHTMLCommon` element, which rendermime pins to `--jp-content-font-size1` and marks `not-prose`; that disables the MyST table styling and lets rendermime's `--jp-ui-font-size1` rule take over, leaving the table at a fixed 13px whatever the slide sets. Tables written in MyST (pipe tables, `list-table`, the `table` directive) escaped that but were scaled to 0.875em of the text. Every table in a markdown cell now renders at the body font size of its cell.
+- Inline code and fenced code blocks in markdown cells no longer ignore it either. JupyterLab pins them to `--jp-code-font-size`, and the wrapper jupyterlab-myst puts around a fenced block carries the Tailwind `text-sm` utility, a `rem` value that the reveal.js theme then scales to 0.55em — leaving code blocks at 7.7px on a slide. Both now follow the body font size of the cell.
+
+### Behavior Changes
+
+- With no custom CSS, tables written in MyST render at 14px instead of 12.25px, tables written in raw HTML follow the markdown body size instead of a fixed 13px, and inline code and code blocks render at 14px instead of 13px. Setting the body font size of markdown cells — `.reveal .slides .myst` in `myst-revealjs.css` — now scales all of them with it.
+
+### Documentation
+
+- The reference slideshow in `examples/` gains a "Table Font Size" slide with a pipe table, a `list-table` and a raw HTML table side by side; `examples/myst-revealjs.css` carries a commented-out markdown font size block for checking that all three follow the text.
+
 ## v1.5.0 (2026-08-01)
 
 Code cell rendering in slideshow mode has been reworked so that a cell — editor, prompts and outputs — scales as a single unit.
